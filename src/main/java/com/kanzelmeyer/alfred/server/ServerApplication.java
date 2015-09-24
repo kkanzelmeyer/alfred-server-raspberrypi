@@ -4,8 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alfred.common.datamodel.StateDevice;
+import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.kanzelmeyer.alfred.handlers.hardware.DoorbellHandler;
+import com.kanzelmeyer.alfred.handlers.state.DoorbellStateHandler;
 import com.kanzelmeyer.alfred.plugins.InputPlugin;
 
 
@@ -17,7 +19,7 @@ public class ServerApplication {
     public static void main(String[] args) {
         log.info("Starting Alfred Server");
         
-        // Create devices, add to device manager
+        // Create devices
         StateDevice doorbell = 
                 new StateDevice.Builder()
                 .setId("doorbell1")
@@ -33,10 +35,16 @@ public class ServerApplication {
                 .setState(State.CLOSED)
                 .build();
         
-        // initialize plugins
+        // Add devices to device manager
+        StateDeviceManager.updateStateDevice(doorbell);
+        StateDeviceManager.updateStateDevice(doorbell);
+        
+        // Add state handlers for devices
+        StateDeviceManager.addDeviceHandler(doorbell.getId(), new DoorbellStateHandler());
+        
+        // initialize hardware plugins
         new InputPlugin(13, new DoorbellHandler(doorbell)).activate();
         
-        // initialize state handlers
         
         
         // start connection thread
