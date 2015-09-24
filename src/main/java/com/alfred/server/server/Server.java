@@ -1,5 +1,6 @@
 package com.alfred.server.server;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
+import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 
 public class Server {
 
@@ -24,10 +26,15 @@ public class Server {
     public static void addServerConnection(Socket connection) {
         serverConnections.add(connection);
         log.info("New Connection added");
-        // TODO Send complete data model
+        // Send complete data model
         HashMap<String, StateDevice> deviceList = StateDeviceManager.getAllDevices();
-        for(int i = 0; i < deviceList.size(); i++) {
-            sendDevice();
+        if(deviceList.size() > 0) {
+            for(String id : deviceList.keySet()) {
+                StateDevice device = deviceList.get(id);
+                sendDevice(device);
+            }
+        } else {
+            log.info("No devices found");
         }
     }
     
@@ -36,7 +43,24 @@ public class Server {
         log.info("Connection removed");
     }
     
-    private static void sendDevice() {
-        
+    private static void sendDevice(StateDevice device) {
+        if(serverConnections.size() > 0) {
+            for(Socket connection : serverConnections) {
+                StateDeviceMessage msg = StateDeviceMessage.newBuilder()
+                        .setId(device.getId())
+                        .setName(device.getName())
+                        .setType(device.getType())
+                        .setState(device.getState())
+                        .build();
+                try {
+                    log.info("Sending device");
+                    log.info("\n" + msg.toString());
+                    msg.writeDelimitedTo(connection.getOutputStream());
+                    log.info("Finished writing");
+                } catch (IOException e) {
+                    log.error("Writing to socket failed", e);
+                }
+            }
+        }
     }
 }

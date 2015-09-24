@@ -39,10 +39,9 @@ public class NewConnectionThread implements Runnable {
             while (true) {
                 Socket connection = _serverSocket.accept();
                 log.info("New connection received");
-                Server.addServerConnection(connection);
-                ClientConnection serverConnection = new ClientConnection(
+                ClientConnection clientConnection = new ClientConnection(
                         connection);
-                new Thread(serverConnection).start();
+                new Thread(clientConnection).start();
             }
         } catch (UnknownHostException e) {
             log.error("Uknown host exception", e);

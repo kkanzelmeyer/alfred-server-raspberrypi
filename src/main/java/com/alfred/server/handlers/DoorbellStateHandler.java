@@ -12,7 +12,6 @@ import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.handlers.StateDeviceHandler;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Builder;
-import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.alfred.server.server.Server;
 import com.google.protobuf.ByteString;
 
@@ -40,19 +39,22 @@ public class DoorbellStateHandler implements StateDeviceHandler {
     @Override
     public void onUpdateDevice(StateDevice device) {
         // Start building message
+        log.info("Device updated");
         messageBuilder.setId(device.getId())
                       .setState(device.getState());
-        
+        sendMessage();
         // if the state is being set to Active, take a picture
         // and let the callback finish sending the message
-        if(device.getState() == State.ACTIVE) {
-            WebCameraThread webCamThread = new WebCameraThread(new TakePictureCallback(device));
-            new Thread(webCamThread).start();
-        } else {
-            // if the state is not being set to active, just send the 
-            // state update message
-            sendMessage();
-        }
+        
+        // TODO uncomment this section 
+//        if(device.getState() == State.ACTIVE) {
+//            WebCameraThread webCamThread = new WebCameraThread(new TakePictureCallback(device));
+//            new Thread(webCamThread).start();
+//        } else {
+//            // if the state is not being set to active, just send the 
+//            // state update message
+//            sendMessage();
+//        }
     }
 
     @Override
@@ -70,13 +72,17 @@ public class DoorbellStateHandler implements StateDeviceHandler {
         StateDeviceMessage deviceMessage = messageBuilder.build();
 
         // Send message to each client
-        log.info("Sending message");
-        log.info(deviceMessage.toString());
-        for(Socket socket : Server.getServerConnections()) {
-            try {
-                deviceMessage.writeTo(socket.getOutputStream());
-            } catch (IOException e) {
-                log.error("Writing to socket failed", e);
+        if(Server.getServerConnections().size() > 0) {
+            for(Socket socket : Server.getServerConnections()) {
+                if(socket.isConnected()) {
+                    try {
+                        log.info("Sending message");
+                        log.info("\n" + deviceMessage.toString());
+                        deviceMessage.writeTo(socket.getOutputStream());
+                    } catch (IOException e) {
+                        log.error("Writing to socket failed", e);
+                    }
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public class ClientConnection implements Runnable {
     public void run() {
         log.info("Starting thread to listen for incoming client messages");
         if (_socket.isConnected()) {
+            Server.addServerConnection(_socket);
             // get incoming message
             InputStream stream;
             StateDeviceMessage msg;
@@ -39,11 +41,15 @@ public class ClientConnection implements Runnable {
                 try {
                     if (_socket.isConnected()) {
                         stream = _socket.getInputStream();
-                        log.info("Message Received");
+                        log.info("Raw input : " + IOUtils.toString(stream, "UTF-8"));
                         msg = StateDeviceMessage.parseFrom(stream);
+                        log.info("Message Received");
                         log.info(msg.toString());
                         device = new StateDevice(msg);
                         StateDeviceManager.updateStateDevice(device);
+                    } else {
+                        log.info("Socket not connected");
+                        break;
                     }
                 } catch (IOException e) {
                     log.info("Lost Client connection : " + _socket.hashCode(), e);
@@ -51,6 +57,8 @@ public class ClientConnection implements Runnable {
                     break;
                 }
             }
+        } else {
+            log.info("Socket not connected");
         }
 
     }
