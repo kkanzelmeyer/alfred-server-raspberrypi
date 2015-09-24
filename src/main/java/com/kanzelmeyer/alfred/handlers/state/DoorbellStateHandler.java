@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.handlers.StateDeviceHandler;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Builder;
+import com.google.protobuf.ByteString;
 import com.kanzelmeyer.alfred.handlers.hardware.WebCamCallback;
 import com.kanzelmeyer.alfred.handlers.hardware.WebCameraThread;
 import com.kanzelmeyer.alfred.server.Server;
@@ -77,7 +79,12 @@ public class DoorbellStateHandler implements StateDeviceHandler {
         public void onComplete(File image) {
             log.info("Device Update: " + device.toString());
             // TODO add image to message
-            
+            try {
+                byte[] imageBytes = FileUtils.readFileToByteArray(image);
+                messageBuilder.setData(ByteString.copyFrom(imageBytes));
+            } catch (IOException e1) {
+                log.error("Unable to read image file" + image.getAbsolutePath(), e1);
+            }
             
             // build message
             StateDeviceMessage deviceMessage = messageBuilder.build();
