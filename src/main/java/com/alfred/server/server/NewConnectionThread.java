@@ -6,9 +6,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Thread that listens for new incoming connections
- * @author Admin
+ * This thread runs a while loop listening for incoming connections
+ * When a new connection is initiated it starts a new thread to handle
+ * socket traffic with that connection and adds the socket instance to
+ * the list of server connections
+ * @author kevin
  *
  */
 public class NewConnectionThread implements Runnable {
@@ -16,6 +22,7 @@ public class NewConnectionThread implements Runnable {
     private String _hostAddress;
     private String _hostPort;
     private ServerSocket _serverSocket;
+    private static final Logger log = LoggerFactory.getLogger(NewConnectionThread.class);
 
     public NewConnectionThread(String hostAddress, String hostPort) {
         _hostAddress = hostAddress;
@@ -24,31 +31,25 @@ public class NewConnectionThread implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Starting thread to listen for incoming client connections");
+        log.info("Starting thread to listen for incoming client connections");
         try {
             InetAddress host = InetAddress.getByName(_hostAddress);
             _serverSocket = new ServerSocket(Integer.valueOf(_hostPort), 10,
                     host);
             while (true) {
                 Socket connection = _serverSocket.accept();
-                System.out.println("Received a new connection");
+                log.info("New connection received");
                 Server.addServerConnection(connection);
-                // TODO add connection to server list of connections
                 ClientConnection serverConnection = new ClientConnection(
                         connection);
                 new Thread(serverConnection).start();
-                // listen for new connections
-                // create new thread for incoming connections
             }
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Uknown host exception", e);
         } catch (NumberFormatException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Number format exception", e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Socket connection failed", e);
         }
 
     }

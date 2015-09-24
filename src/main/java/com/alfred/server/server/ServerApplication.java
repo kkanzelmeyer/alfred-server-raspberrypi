@@ -6,17 +6,19 @@ import org.slf4j.LoggerFactory;
 import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
-import com.alfred.server.handlers.hardware.DoorbellHandler;
-import com.alfred.server.handlers.state.DoorbellStateHandler;
-import com.alfred.server.plugins.InputPlugin;
-
+import com.alfred.server.handlers.DoorbellStateHandler;
+import com.alfred.server.plugins.DoorbellPlugin;
 
 
 public class ServerApplication {
-    static Class<ServerApplication> CLASS = ServerApplication.class;
-    private static final Logger log = LoggerFactory.getLogger(CLASS);
+    
+    private static final Logger log = LoggerFactory.getLogger(ServerApplication.class);
 
     public static void main(String[] args) {
+        log.info("\n-----------------------------------------------------------"
+               + "\n             Alfred Home Server"
+               + "\n-----------------------------------------------------------"
+               + "\n");
         log.info("Starting Alfred Server");
         
         // Create devices
@@ -27,23 +29,14 @@ public class ServerApplication {
                 .setState(State.INACTIVE)
                 .build();
         
-        // garage door
-        StateDevice garageDoor = 
-                new StateDevice.Builder()
-                .setId("garagedoor1")
-                .setName("Main Garage Door")
-                .setState(State.CLOSED)
-                .build();
-        
-        // Add devices to device manager
-        StateDeviceManager.updateStateDevice(doorbell);
+        // Add device(s) to device manager
         StateDeviceManager.updateStateDevice(doorbell);
         
         // Add state handlers for devices
         StateDeviceManager.addDeviceHandler(doorbell.getId(), new DoorbellStateHandler());
         
         // initialize hardware plugins
-        new InputPlugin(13, new DoorbellHandler(doorbell)).activate();
+        new DoorbellPlugin(13, doorbell).activate();
         
         
         

@@ -1,4 +1,4 @@
-package com.alfred.server.handlers.state;
+package com.alfred.server.handlers;
 
 import java.io.File;
 import java.io.IOException;
