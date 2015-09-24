@@ -13,8 +13,6 @@ import com.alfred.common.handlers.StateDeviceHandler;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Builder;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
-import com.alfred.server.handlers.hardware.WebCamCallback;
-import com.alfred.server.handlers.hardware.WebCameraThread;
 import com.alfred.server.server.Server;
 import com.google.protobuf.ByteString;
 
@@ -46,6 +44,7 @@ public class DoorbellStateHandler implements StateDeviceHandler {
                       .setState(device.getState());
         
         // if the state is being set to Active, take a picture
+        // and let the callback finish sending the message
         if(device.getState() == State.ACTIVE) {
             WebCameraThread webCamThread = new WebCameraThread(new TakePictureCallback(device));
             new Thread(webCamThread).start();
