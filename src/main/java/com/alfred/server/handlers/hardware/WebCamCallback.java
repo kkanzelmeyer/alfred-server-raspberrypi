@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.handlers.hardware;
+package com.alfred.server.handlers.hardware;
 
 import java.io.File;
 

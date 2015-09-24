@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.plugins;
+package com.alfred.server.plugins;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

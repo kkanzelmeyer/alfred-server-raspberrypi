@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.plugins;
+package com.alfred.server.plugins;
 
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;

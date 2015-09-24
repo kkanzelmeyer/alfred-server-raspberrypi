@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.server;
+package com.alfred.server.server;
 
 import java.io.IOException;
 import java.net.InetAddress;

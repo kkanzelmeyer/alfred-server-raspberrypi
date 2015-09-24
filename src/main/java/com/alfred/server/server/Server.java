@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.server;
+package com.alfred.server.server;
 
 import java.net.Socket;
 import java.util.ArrayList;

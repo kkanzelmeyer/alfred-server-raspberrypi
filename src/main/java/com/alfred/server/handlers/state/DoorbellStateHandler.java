@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.handlers.state;
+package com.alfred.server.handlers.state;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -15,10 +15,10 @@ import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.handlers.StateDeviceHandler;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Builder;
+import com.alfred.server.handlers.hardware.WebCamCallback;
+import com.alfred.server.handlers.hardware.WebCameraThread;
+import com.alfred.server.server.Server;
 import com.google.protobuf.ByteString;
-import com.kanzelmeyer.alfred.handlers.hardware.WebCamCallback;
-import com.kanzelmeyer.alfred.handlers.hardware.WebCameraThread;
-import com.kanzelmeyer.alfred.server.Server;
 
 /**
  * Server state handler for a doorbell device

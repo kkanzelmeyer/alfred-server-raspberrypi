@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.server;
+package com.alfred.server.server;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.handlers.hardware;
+package com.alfred.server.handlers.hardware;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

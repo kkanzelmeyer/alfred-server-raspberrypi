@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.server;
+package com.alfred.server.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
-import com.kanzelmeyer.alfred.handlers.hardware.DoorbellHandler;
-import com.kanzelmeyer.alfred.handlers.state.DoorbellStateHandler;
-import com.kanzelmeyer.alfred.plugins.InputPlugin;
+import com.alfred.server.handlers.hardware.DoorbellHandler;
+import com.alfred.server.handlers.state.DoorbellStateHandler;
+import com.alfred.server.plugins.InputPlugin;
 
 
 

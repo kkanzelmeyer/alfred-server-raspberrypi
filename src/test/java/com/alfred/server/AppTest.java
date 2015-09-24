@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.server;
+package com.alfred.server;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

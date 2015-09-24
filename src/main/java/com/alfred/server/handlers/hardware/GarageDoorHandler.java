@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.handlers.hardware;
+package com.alfred.server.handlers.hardware;
 
 import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;

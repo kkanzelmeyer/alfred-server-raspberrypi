@@ -1,4 +1,4 @@
-package com.kanzelmeyer.alfred.handlers.connection;
+package com.alfred.server.handlers.connection;
 
 public interface ServerConnectionHandler {
 
