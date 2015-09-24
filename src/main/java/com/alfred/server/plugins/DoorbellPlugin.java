@@ -16,15 +16,11 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 
 /**
- * This is a generic input plugin for a pin on the raspberry pi. The constructor
+ * This is an input plugin for a device monitored by Alfred. The constructor
  * sets a pin number and a handler for the plugin.
  * 
- * Since the digital input behavior on the hardware is basically the same, independent
- * of what type of hardware is connected, the input plugin should be about the same for
- * each device. The behavior (i.e. what happens when the input changes) should be defined
- * in a handler.
  * 
- * The hardware input is defined to use the raspberry pi's internal pull down resistor 
+ * Inputs are configured to use the raspberry pi's internal pull down resistor 
  * 
  * @author kevin
  *
