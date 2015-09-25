@@ -39,6 +39,9 @@ public class DoorbellPlugin {
         _device = device;
     }
 
+    /**
+     * Call this method to activate the plugin
+     */
     public void activate() {
         log.info("Adding plugin for pin " + _pin);
         _pinHandler = new DoorbellHandler(_device);
@@ -54,7 +57,12 @@ public class DoorbellPlugin {
         }
     }
 
-public class DoorbellHandler implements GpioPinListenerDigital {
+/**
+ * This class handles input changes from the Raspberry Pi GPIO pins
+ * @author kevin
+ *
+ */
+private class DoorbellHandler implements GpioPinListenerDigital {
         
         private StateDevice _device;
 

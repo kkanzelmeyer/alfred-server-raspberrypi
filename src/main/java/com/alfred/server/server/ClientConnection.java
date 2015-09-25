@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +14,8 @@ import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 /**
  * Thread that listens for socket traffic on a given connection.
  * Note - the run method loops and waits on the input stream from
- * a socket. It is expecting a StateDeviceMessage message type 
+ * a socket. It is expecting a StateDeviceMessage message type
+ * 
  * @author kevin
  *
  */
@@ -41,7 +41,6 @@ public class ClientConnection implements Runnable {
                 try {
                     if (_socket.isConnected()) {
                         stream = _socket.getInputStream();
-                        log.info("Raw input : " + IOUtils.toString(stream, "UTF-8"));
                         msg = StateDeviceMessage.parseFrom(stream);
                         log.info("Message Received");
                         log.info(msg.toString());
