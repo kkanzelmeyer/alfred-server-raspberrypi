@@ -1,4 +1,4 @@
-package com.alfred.server;
+package com.alfred.server.server;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class FakeConnection implements Runnable {
                         File image = new File(imagePath + imageName);
                         try {
                             FileUtils.writeByteArrayToFile(image, msg.getData().toByteArray());
-                            log.info("Saving image " + imagePath + imageName);
+                            log.info("Saving image " + imagePath);
                         } catch (IOException e) {
                             log.error("Can't write to file", e);
                         }

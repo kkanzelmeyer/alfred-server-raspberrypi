@@ -24,7 +24,7 @@ import com.google.protobuf.ByteString;
 public class DoorbellStateHandler implements StateDeviceHandler {
 
     private static final Logger log = LoggerFactory.getLogger(DoorbellStateHandler.class);
-    private Builder messageBuilder = StateDeviceMessage.newBuilder();
+    private Builder messageBuilder;
 
     @Override
     public void onAddDevice(StateDevice device) {
@@ -40,7 +40,8 @@ public class DoorbellStateHandler implements StateDeviceHandler {
     @Override
     public void onUpdateDevice(StateDevice device) {
         // Start building message
-        log.info("Device updated");
+        log.info("Device updated" + device.toString());
+        messageBuilder = StateDeviceMessage.newBuilder();
         messageBuilder.setId(device.getId())
                       .setState(device.getState());
         // if the state is being set to Active, take a picture
@@ -76,8 +77,8 @@ public class DoorbellStateHandler implements StateDeviceHandler {
                 if(socket.isConnected()) {
                     try {
                         log.info("Sending message");
-                        log.info("\n" + deviceMessage.toString());
-                        deviceMessage.writeTo(socket.getOutputStream());
+//                        log.info("\n" + deviceMessage.toString());
+                        deviceMessage.writeDelimitedTo(socket.getOutputStream());
                     } catch (IOException e) {
                         log.error("Writing to socket failed", e);
                     }
@@ -108,10 +109,10 @@ public class DoorbellStateHandler implements StateDeviceHandler {
          */
         @Override
         public void onComplete(File image) {
-            log.info("Device Update: " + device.toString());
-            // TODO add image to message
+            log.info("Finished taking picture. Adding to message");
             try {
                 byte[] imageBytes = FileUtils.readFileToByteArray(image);
+                // TODO check for file corruption?
                 messageBuilder.setData(ByteString.copyFrom(imageBytes));
             } catch (IOException e1) {
                 log.error("Unable to read image file" + image.getAbsolutePath(), e1);

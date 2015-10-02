@@ -54,15 +54,15 @@ public class WebCameraThread implements Runnable {
            webcam.setCustomViewSizes(myResolution);
            webcam.setViewSize(myResolution[0]);
            webcam.open();
-           String filepath = "/home/pi/Alfred/img";
+           String filepath = "/home/pi/Alfred/img/";
            String filename = "visitor" + System.currentTimeMillis() / 1000L + ".jpg";
            try {
                image = new File(filepath + filename);
                ImageIO.write(webcam.getImage(), "JPG", image);
+               webcam.close();
            } catch (IOException e) {
                // TODO Auto-generated catch block
                e.printStackTrace();
            }
-           webcam.close();
        }
 }
