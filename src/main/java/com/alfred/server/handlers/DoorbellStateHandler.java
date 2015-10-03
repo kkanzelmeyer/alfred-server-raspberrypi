@@ -47,6 +47,7 @@ public class DoorbellStateHandler implements StateDeviceHandler {
         log.info("Device updated" + device.toString());
         messageBuilder = StateDeviceMessage.newBuilder();
         messageBuilder.setId(device.getId())
+                      .setName(device.getName())
                       .setState(device.getState());
         // if the state is being set to Active, take a picture
         // and let the callback finish sending the message
