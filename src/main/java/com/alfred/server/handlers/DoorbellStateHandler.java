@@ -1,8 +1,12 @@
 package com.alfred.server.handlers;
 
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -48,7 +52,7 @@ public class DoorbellStateHandler implements StateDeviceHandler {
         // and let the callback finish sending the message
         
         if(device.getState() == State.ACTIVE) {
-            WebCameraThread webCamThread = new WebCameraThread(new TakePictureCallback(device));
+            WebCameraThread webCamThread = new WebCameraThread(new TakePictureCallback());
             new Thread(webCamThread).start();
         } else {
             // if the state is not being set to active, just send the 
@@ -96,28 +100,37 @@ public class DoorbellStateHandler implements StateDeviceHandler {
      */
     private class TakePictureCallback implements WebCamCallback {
 
-        private StateDevice device;
-
-        public TakePictureCallback(StateDevice device) {
-            this.device = device;
-        }
-
         /**
          * This method adds the image to the message that was started in the parent
          * class onDeviceUpdate method. After the message is built it is sent
          * to each client connected to the server
          */
         @Override
-        public void onComplete(File image) {
+        public void onComplete(RenderedImage image) {
             log.info("Finished taking picture. Adding to message");
+            // Send the message
             try {
-                byte[] imageBytes = FileUtils.readFileToByteArray(image);
-                // TODO check for file corruption?
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(image, "jpg", baos);
+                byte[] imageBytes = baos.toByteArray();
                 messageBuilder.setData(ByteString.copyFrom(imageBytes));
+                sendMessage();
             } catch (IOException e1) {
-                log.error("Unable to read image file" + image.getAbsolutePath(), e1);
+                log.error("Unable to read image file" + image, e1);
             }
-            sendMessage();
+
+            // Save the image to a file
+            try {
+                log.info("Saving image file on server");
+                String filepath = "/home/pi/Alfred/img/";
+                String filename = "visitor" + System.currentTimeMillis() / 1000L + ".jpg";
+                File outputfile = new File(filepath + filename);
+                ImageIO.write(image, "jpg", outputfile);
+                log.info("Finished saving");
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.alfred.server.handlers;
 
-import java.io.File;
+import java.awt.image.RenderedImage;
 
 public interface WebCamCallback {
-    public void onComplete(File image);
+    public void onComplete(RenderedImage image);
 }

@@ -1,29 +1,31 @@
 package com.alfred.server.handlers;
 
 import java.awt.Dimension;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
 import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.ds.fswebcam.FsWebcamDriver;
+import com.github.sarxos.webcam.ds.v4l4j.V4l4jDriver;
 
 public class WebCameraThread implements Runnable {
     
-    static {
-        Webcam.setDriver(new FsWebcamDriver()); // this is important
-    }
+//    static {
+//        Webcam.setDriver(new FsWebcamDriver()); // this is important
+//    }
     
-    private File image;
+    private RenderedImage image;
     private WebCamCallback _handler;
     
-    public File getImage() {
+    public RenderedImage getImage() {
         return image;
     }
     
     public WebCameraThread(WebCamCallback handler) {
         _handler = handler;
+        Webcam.setDriver(new V4l4jDriver()); // this is important
     }
 
     @Override
@@ -54,15 +56,8 @@ public class WebCameraThread implements Runnable {
            webcam.setCustomViewSizes(myResolution);
            webcam.setViewSize(myResolution[0]);
            webcam.open();
-           String filepath = "/home/pi/Alfred/img/";
-           String filename = "visitor" + System.currentTimeMillis() / 1000L + ".jpg";
-           try {
-               image = new File(filepath + filename);
-               ImageIO.write(webcam.getImage(), "JPG", image);
-               webcam.close();
-           } catch (IOException e) {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
-           }
+           image = webcam.getImage();
+           webcam.close();
+           
        }
 }
