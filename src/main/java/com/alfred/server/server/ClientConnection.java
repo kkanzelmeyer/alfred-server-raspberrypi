@@ -41,8 +41,8 @@ public class ClientConnection implements Runnable {
                 try {
                     if (_socket.isConnected()) {
                         stream = _socket.getInputStream();
-                        msg = StateDeviceMessage.parseFrom(stream);
                         log.info("Message Received");
+                        msg = StateDeviceMessage.parseFrom(stream);
                         log.info(msg.toString());
                         device = new StateDevice(msg);
                         StateDeviceManager.updateStateDevice(device);

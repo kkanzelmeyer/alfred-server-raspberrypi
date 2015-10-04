@@ -23,7 +23,10 @@ public class ServerApp {
         log.info("Starting Alfred Server");
 
         // create new device
-        StateDevice doorbell = new StateDevice.Builder().setId("doorbell1").setName("Front Door").setType(Type.DOORBELL)
+        StateDevice doorbell = new StateDevice.Builder()
+                .setId("doorbell1")
+                .setName("Front Door")
+                .setType(Type.DOORBELL)
                 .setState(State.INACTIVE).build();
 
         // Add state handlers for device(s)
