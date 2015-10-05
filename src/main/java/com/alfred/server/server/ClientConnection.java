@@ -40,6 +40,9 @@ public class ClientConnection implements Runnable {
                         stream = _socket.getInputStream();
                         msg = StateDeviceMessage.parseDelimitedFrom(stream);
                         log.info("Message Received");
+                        if(msg == null) {
+                            break;
+                        }
                         log.info(msg.toString());
                         
                         // notify handlers
@@ -51,10 +54,11 @@ public class ClientConnection implements Runnable {
                     }
                 } catch (IOException e) {
                     log.info("Lost Client connection : " + _socket.hashCode(), e);
-                    Server.removeServerConnection(_socket);
                     break;
                 }
             }
+            Server.removeServerConnection(_socket);
+            log.info("Dropping connection. " + Server.getConnectionCount() + " connections remaining.");
         } else {
             log.info("Socket not connected");
         }

@@ -17,6 +17,10 @@ import com.alfred.common.network.NetworkHandler;
  * @author kevin
  *
  */
+/**
+ * @author kevin
+ *
+ */
 public class Server {
 
     private static List<Socket> serverConnections = new ArrayList<Socket>();
@@ -27,6 +31,9 @@ public class Server {
         return serverConnections;
     }
     
+    /**
+     * @param connection
+     */
     public static void addServerConnection(Socket connection) {
         serverConnections.add(connection);
         log.info("New Connection added");
@@ -36,9 +43,18 @@ public class Server {
         }
     }
     
+    
+    /**
+     * @param connection
+     */
     public static void removeServerConnection(Socket connection) {
         serverConnections.remove(connection);
         log.info("Connection removed");
+    }
+    
+    
+    public static int getConnectionCount() {
+        return serverConnections.size();
     }
     
     // Methods for adding and removing connection handlers

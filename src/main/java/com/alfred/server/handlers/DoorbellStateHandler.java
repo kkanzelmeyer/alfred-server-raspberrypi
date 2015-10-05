@@ -78,7 +78,7 @@ public class DoorbellStateHandler implements StateDeviceHandler {
         StateDeviceMessage deviceMessage = messageBuilder.build();
 
         // Send message to each client
-        if(Server.getServerConnections().size() > 0) {
+        if(Server.getConnectionCount() > 0) {
             for(Socket socket : Server.getServerConnections()) {
                 if(socket.isConnected()) {
                     try {

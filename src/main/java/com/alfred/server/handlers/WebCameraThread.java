@@ -41,7 +41,7 @@ public class WebCameraThread implements Runnable {
         // Custom resolution
            Dimension[] myResolution = 
                    new Dimension[] { 
-                       new Dimension(720, 405), 
+                       new Dimension(640, 360), 
                        new Dimension(1280, 720) 
                    };
            Webcam webcam = Webcam.getDefault();
@@ -50,6 +50,5 @@ public class WebCameraThread implements Runnable {
            webcam.open();
            image = webcam.getImage();
            webcam.close();
-           
        }
 }
