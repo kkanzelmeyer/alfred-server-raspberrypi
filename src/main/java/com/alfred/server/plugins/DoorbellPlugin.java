@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
+import com.alfred.server.handlers.DoorbellStateHandler;
+import com.alfred.server.utils.PinConverter;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
@@ -27,33 +29,40 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  */
 public class DoorbellPlugin {
 
-    private int _pin;
-    private StateDevice _device;
-    private GpioPinListenerDigital _pinHandler = null;
-    private GpioController _gpio = null;
-    private GpioPinDigitalInput _input = null;
+    private int pin;
+    private StateDevice device;
+    private GpioPinListenerDigital pinHandler = null;
+    private DoorbellStateHandler stateHandler = null;
+    
     final private static Logger log = LoggerFactory.getLogger(DoorbellPlugin.class);
     
     public DoorbellPlugin(int pin, StateDevice device) {
-        _pin = pin;
-        _device = device;
+        this.pin = pin;
+        this.device = device;
     }
 
     /**
      * Call this method to activate the plugin
      */
     public void activate() {
-        log.info("Adding plugin for pin " + _pin);
-        _pinHandler = new DoorbellHandler(_device);
+        // Raspberry pi handler
+        log.info("Adding plugin for pin " + pin);
+        pinHandler = new DoorbellHandler(device);
         try {
-            _gpio = GpioFactory.getInstance();
-            _input = _gpio.provisionDigitalInputPin(
-                        PinConverter.ModelB.fromInt(_pin),
+            GpioController gpio = GpioFactory.getInstance();
+            GpioPinDigitalInput input = gpio.provisionDigitalInputPin(
+                        PinConverter.ModelB.fromInt(pin),
                         "Input",
                         PinPullResistance.PULL_DOWN);
-            _input.addListener(_pinHandler);
+            input.addListener(pinHandler);
         } catch (Exception e) {
             log.error("Exception caught", e);
+        }
+        
+        // State handler
+        if(stateHandler == null) {
+            stateHandler = new DoorbellStateHandler();
+            StateDeviceManager.addDeviceHandler(device.getId(), stateHandler);
         }
     }
 

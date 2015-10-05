@@ -7,8 +7,6 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alfred.common.datamodel.StateDevice;
-import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 
 /**
@@ -36,16 +34,17 @@ public class ClientConnection implements Runnable {
             // get incoming message
             InputStream stream;
             StateDeviceMessage msg;
-            StateDevice device;
             while (true) {
                 try {
                     if (_socket.isConnected()) {
                         stream = _socket.getInputStream();
-                        log.info("Message Received");
                         msg = StateDeviceMessage.parseDelimitedFrom(stream);
+                        log.info("Message Received");
                         log.info(msg.toString());
-                        device = new StateDevice(msg);
-                        StateDeviceManager.updateStateDevice(device);
+                        
+                        // notify handlers
+                        Server.messageReceived(msg);
+                        
                     } else {
                         log.info("Socket not connected");
                         break;

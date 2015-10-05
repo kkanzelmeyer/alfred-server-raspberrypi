@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
+import com.alfred.common.network.NetworkHandler;
 
 /**
  * This class handles sending the complete data model to a new client
@@ -18,13 +19,13 @@ import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
  * @author kevin
  *
  */
-public class NewConnectionHandler implements ServerConnectionHandler {
+public class ServerNetworkHandler implements NetworkHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(NewConnectionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ServerNetworkHandler.class);
 
     @Override
-    public void onAddConnection(Socket connection) {
-        // Send complete data model
+    public void onConnect(Socket connection) {
+     // Send complete data model
         HashMap<String, StateDevice> deviceList = StateDeviceManager.getAllDevices();
         if (deviceList.size() > 0) {
             for (String id : deviceList.keySet()) {
@@ -35,7 +36,6 @@ public class NewConnectionHandler implements ServerConnectionHandler {
                     log.info("Sending device");
                     log.info("\n" + msg.toString());
                     msg.writeDelimitedTo(connection.getOutputStream());
-                    log.info("Finished writing");
                 } catch (IOException e) {
                     log.error("Writing to socket failed", e);
                 }
@@ -46,8 +46,9 @@ public class NewConnectionHandler implements ServerConnectionHandler {
     }
 
     @Override
-    public void onRemoveConnection(Socket connection) {
-        // TODO Auto-generated method stub
+    public void onMessageReceived(StateDeviceMessage msg) {
+        StateDevice device = new StateDevice(msg);
+        StateDeviceManager.updateStateDevice(device);
         
     }
 

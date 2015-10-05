@@ -7,7 +7,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alfred.server.handlers.ServerConnectionHandler;
+import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
+import com.alfred.common.network.NetworkHandler;
 
 /**
  * This class is the abstraction of the Alfred server connections. It maintains
@@ -19,7 +20,7 @@ import com.alfred.server.handlers.ServerConnectionHandler;
 public class Server {
 
     private static List<Socket> serverConnections = new ArrayList<Socket>();
-    private static List<ServerConnectionHandler> connectionHandlers = new ArrayList<ServerConnectionHandler>();
+    private static List<NetworkHandler> connectionHandlers = new ArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(Server.class);
     
     public static List<Socket> getServerConnections() {
@@ -30,8 +31,8 @@ public class Server {
         serverConnections.add(connection);
         log.info("New Connection added");
         // Notify Connection Handlers
-        for(ServerConnectionHandler handler : connectionHandlers) {
-            handler.onAddConnection(connection);
+        for(NetworkHandler handler : connectionHandlers) {
+            handler.onConnect(connection);
         }
     }
     
@@ -42,17 +43,27 @@ public class Server {
     
     // Methods for adding and removing connection handlers
     
-    public static void addConnectionHandler(ServerConnectionHandler handler) {
+    public static void addConnectionHandler(NetworkHandler handler) {
         if(!connectionHandlers.contains(handler)) {
             log.info("Adding server connection handler: " + handler.getClass());
             connectionHandlers.add(handler);
         }
     }
     
-    public static void removeConnectionHandler(ServerConnectionHandler handler) {
+    public static void removeConnectionHandler(NetworkHandler handler) {
         if(connectionHandlers.contains(handler)) {
             log.info("Removing server connection handler: " + handler.getClass());
             connectionHandlers.remove(handler);
+        }
+    }
+    
+    /**
+     * Method for receiving a new message
+     */
+    public static void messageReceived(StateDeviceMessage msg) {
+     // Notify Connection Handlers
+        for(NetworkHandler handler : connectionHandlers) {
+            handler.onMessageReceived(msg);
         }
     }
 }

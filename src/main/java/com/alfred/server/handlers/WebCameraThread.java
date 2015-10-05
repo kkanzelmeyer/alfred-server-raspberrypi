@@ -2,19 +2,11 @@ package com.alfred.server.handlers;
 
 import java.awt.Dimension;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.ds.v4l4j.V4l4jDriver;
 
 public class WebCameraThread implements Runnable {
-    
-//    static {
-//        Webcam.setDriver(new FsWebcamDriver()); // this is important
-//    }
     
     private RenderedImage image;
     private WebCamCallback _handler;

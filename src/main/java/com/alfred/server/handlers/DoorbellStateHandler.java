@@ -8,7 +8,6 @@ import java.net.Socket;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +16,7 @@ import com.alfred.common.handlers.StateDeviceHandler;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Builder;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
+import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
 import com.alfred.server.server.Server;
 import com.google.protobuf.ByteString;
 
@@ -47,6 +47,7 @@ public class DoorbellStateHandler implements StateDeviceHandler {
         log.info("Device updated" + device.toString());
         messageBuilder = StateDeviceMessage.newBuilder();
         messageBuilder.setId(device.getId())
+                      .setType(Type.DOORBELL)
                       .setName(device.getName())
                       .setState(device.getState());
         // if the state is being set to Active, take a picture
