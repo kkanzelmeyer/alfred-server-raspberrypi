@@ -49,7 +49,6 @@ public class ServerNetworkHandler implements NetworkHandler {
     public void onMessageReceived(StateDeviceMessage msg) {
         StateDevice device = new StateDevice(msg);
         StateDeviceManager.updateStateDevice(device);
-        
     }
 
 }

@@ -84,7 +84,7 @@ public class DoorbellStateHandler implements StateDeviceHandler {
                     try {
                         log.info("Sending message");
                         deviceMessage.writeDelimitedTo(socket.getOutputStream());
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         Server.removeServerConnection(socket);
                         log.error("Writing to socket failed", e);
                     }

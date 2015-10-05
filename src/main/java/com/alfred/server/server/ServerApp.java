@@ -29,7 +29,7 @@ public class ServerApp {
                 .setState(State.INACTIVE).build();
 
         // Add device(s) to device manager
-        StateDeviceManager.updateStateDevice(doorbell);
+        StateDeviceManager.addStateDevice(doorbell);
 
         // Add and activate device plugins
         new DoorbellPlugin(13, doorbell).activate();

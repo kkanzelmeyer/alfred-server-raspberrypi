@@ -84,7 +84,7 @@ private class DoorbellHandler implements GpioPinListenerDigital {
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
             if (event.getState() == PinState.HIGH) {
                 log.info(_device.getName() + " event detected : " + event.getState());
-                StateDevice deviceClone = new StateDevice(StateDeviceManager.getDevice(_device.getId()));
+                StateDevice deviceClone = StateDeviceManager.getDevice(_device.getId());
                 State newState;
                 if (deviceClone.getState() != State.ACTIVE) {
                     newState = State.ACTIVE;
@@ -92,8 +92,9 @@ private class DoorbellHandler implements GpioPinListenerDigital {
                     // TODO for testing only - remove setting to inactive for product installation
                     newState = State.INACTIVE;
                 }
-                deviceClone.setState(newState);
-                StateDeviceManager.updateStateDevice(deviceClone);
+                
+                // update the state
+                StateDeviceManager.updateStateDevice(_device.getId(), newState);
             } 
         }
     }
