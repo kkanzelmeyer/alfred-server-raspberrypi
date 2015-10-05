@@ -7,7 +7,6 @@ import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
-import com.alfred.server.handlers.DoorbellStateHandler;
 import com.alfred.server.handlers.ServerNetworkHandler;
 import com.alfred.server.plugins.DoorbellPlugin;
 
