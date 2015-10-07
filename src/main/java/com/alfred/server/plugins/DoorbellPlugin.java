@@ -62,7 +62,7 @@ public class DoorbellPlugin {
         // State handler
         if(stateHandler == null) {
             stateHandler = new DoorbellStateHandler();
-            StateDeviceManager.addDeviceHandler(device.getId(), stateHandler);
+            StateDeviceManager.addDeviceHandler(stateHandler);
         }
     }
 
