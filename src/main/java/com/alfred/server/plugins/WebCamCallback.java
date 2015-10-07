@@ -1,4 +1,4 @@
-package com.alfred.server.handlers;
+package com.alfred.server.plugins;
 
 import java.awt.image.RenderedImage;
 

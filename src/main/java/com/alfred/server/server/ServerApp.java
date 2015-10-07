@@ -9,6 +9,7 @@ import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
 import com.alfred.server.handlers.ServerNetworkHandler;
 import com.alfred.server.plugins.DoorbellPlugin;
+import com.alfred.server.plugins.ServerConnectionPlugin;
 
 public class ServerApp {
 
@@ -18,10 +19,10 @@ public class ServerApp {
         log.info("\n-----------------------------------------------------------"
                 + "\n             Alfred Home Server"
                 + "\n-----------------------------------------------------------" + "\n");
-        
+
         log.info("Starting Alfred Server");
 
-        // create new device
+        // create new device(s)
         StateDevice doorbell = new StateDevice.Builder()
                 .setId("doorbell1")
                 .setName("Front Door")
@@ -31,11 +32,13 @@ public class ServerApp {
         // Add device(s) to device manager
         StateDeviceManager.addStateDevice(doorbell);
 
-        // Add and activate device plugins
-        new DoorbellPlugin(13, doorbell).activate();
-
-        // Add network handler for server traffic
-        Server.addConnectionHandler(new ServerNetworkHandler());
+        // Create plugins
+        ServerConnectionPlugin serverConnectionPlugin = new ServerConnectionPlugin();
+        DoorbellPlugin frontDoorPlugin = new DoorbellPlugin(13, doorbell);
+        
+        // Activate plugins
+        serverConnectionPlugin.activate();
+        frontDoorPlugin.activate();
 
         // start server thread
         Thread server = new Thread(new NewConnectionThread("192.168.1.25", "56"));
@@ -45,6 +48,12 @@ public class ServerApp {
         while (true) {
 
         }
+
+        log.info("Shutting down Alfred Server");
+        
+        // Deactivate plugins
+        serverConnectionPlugin.deactivate();
+        frontDoorPlugin.deactivate();
     }
 
 }

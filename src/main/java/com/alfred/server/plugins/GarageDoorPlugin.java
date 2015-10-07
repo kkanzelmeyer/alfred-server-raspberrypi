@@ -1,10 +1,16 @@
 package com.alfred.server.plugins;
 
+import java.net.Socket;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alfred.common.datamodel.StateDevice;
+import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.handlers.StateDeviceHandler;
+import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
+import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
+import com.alfred.common.network.NetworkHandler;
 import com.alfred.server.utils.PinConverter;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -18,10 +24,11 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 public class GarageDoorPlugin implements DevicePlugin{
     
     private int pin;
-    private StateDevice device;
-    private GpioPinListenerDigital switchHandler = null;
+    private StateDevice myDevice;
+    private GpioPinListenerDigital sensorHandler = null;
     private GpioPinDigitalOutput button = null;
     private GarageDoorStateHandler stateHandler = null;
+    private GarageDoorNetworkHandler networkHandler = null;
     
     // Logger
     final private static Logger log = LoggerFactory.getLogger(DoorbellPlugin.class);
@@ -30,15 +37,15 @@ public class GarageDoorPlugin implements DevicePlugin{
     public void activate() {
         // Raspberry Pi interfaces
         log.info("Adding plugin for pin " + pin);
-        switchHandler = new GarageDoorSensorHandler(device);
+        sensorHandler = new GarageDoorSensorHandler(myDevice);
         try {
             // Create digital listener for garage door sensor
             GpioController gpio = GpioFactory.getInstance();
             GpioPinDigitalInput input = gpio.provisionDigitalInputPin(
                         PinConverter.ModelB.fromInt(pin),
-                        "Input",
+                        "Sensor",
                         PinPullResistance.PULL_DOWN);
-            input.addListener(switchHandler);
+            input.addListener(sensorHandler);
             
             // create digital output for garage door button
             button = gpio.provisionDigitalOutputPin(
@@ -52,7 +59,15 @@ public class GarageDoorPlugin implements DevicePlugin{
         // State Handler
         if(stateHandler == null) {
             stateHandler = new GarageDoorStateHandler();
+            StateDeviceManager.addDeviceHandler(stateHandler);
         }
+    }
+    
+
+
+    @Override
+    public void deactivate() {
+        // TODO Auto-generated method stub
         
     }
     
@@ -88,13 +103,34 @@ public class GarageDoorPlugin implements DevicePlugin{
         @Override
         public void onUpdateDevice(StateDevice device) {
             // if device is set to closing or open, trigger the button
-            
+            if(device.getState() == State.OPEN) {
+                log.info("Triggering garage door button");
+                button.pulse(200);
+            }
         }
 
         @Override
         public void onRemoveDevice(StateDevice device) {
             // TODO Auto-generated method stub
             
+        }
+        
+    }
+    
+    private class GarageDoorNetworkHandler implements NetworkHandler {
+
+        @Override
+        public void onConnect(Socket connection) {
+            // Do nothing
+        }
+
+        @Override
+        public void onMessageReceived(StateDeviceMessage msg) {
+            if(msg.getId() == myDevice.getId()) {
+                log.info("Message Received" + msg.toString());
+                StateDevice device = new StateDevice(msg);
+                StateDeviceManager.updateStateDevice(device);
+            }
         }
         
     }
