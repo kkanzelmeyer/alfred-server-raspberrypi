@@ -5,6 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 
@@ -12,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alfred.common.datamodel.StateDevice;
+import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.handlers.StateDeviceHandler;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Builder;
@@ -29,7 +34,9 @@ public class DoorbellStateHandler implements StateDeviceHandler {
 
     private static final Logger log = LoggerFactory.getLogger(DoorbellStateHandler.class);
     private Builder messageBuilder;
-
+    private Timer timer = null;
+    private DoorbellResetTask resetTask = null;
+    
     @Override
     public void onAddDevice(StateDevice device) {
         log.info("Device added");
@@ -54,12 +61,20 @@ public class DoorbellStateHandler implements StateDeviceHandler {
         // and let the callback finish sending the message
         
         if(device.getState() == State.ACTIVE) {
+        	// Start a thread to take a picture from the webcam
             WebCameraThread webCamThread = new WebCameraThread(new TakePictureCallback());
             new Thread(webCamThread).start();
+            // start a reset timer
+            startResetTimer(2, device);
+            
         } else {
             // if the state is not being set to active, just send the 
             // state update message
             sendMessage();
+            // cancel the timer
+            if(timer != null) {
+            	timer.cancel();
+            }
         }
     }
 
@@ -67,6 +82,19 @@ public class DoorbellStateHandler implements StateDeviceHandler {
     public void onRemoveDevice(StateDevice device) {
         log.info("Device removed");
         log.info(device.toString());
+    }
+    
+    /**
+     * This helper method schedules the reset doorbell task
+     * @param minutes
+     */
+    public void startResetTimer(int minutes, StateDevice device) {
+    	resetTask = new DoorbellResetTask(device);
+        timer = new Timer();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, minutes);
+        Date endTime = calendar.getTime();
+        timer.schedule(resetTask, endTime);
     }
 
     /**
@@ -94,7 +122,7 @@ public class DoorbellStateHandler implements StateDeviceHandler {
     }
 
     /**
-     * This method acts as a callback to the webcam thread. The onComplete
+     * This class is a callback to the webcam thread. The onComplete
      * method is called by the webcam thread after the picture has been taken.
      * 
      * @author Admin
@@ -134,5 +162,26 @@ public class DoorbellStateHandler implements StateDeviceHandler {
                 e.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * Class to reset the doorbell state to inactive. This timer task
+     * is scheduled by the parent class
+     * @author kanzelmeyer
+     *
+     */
+    private class DoorbellResetTask extends TimerTask {
+    	
+    	private StateDevice device;
+    	
+    	public DoorbellResetTask(StateDevice stateDevice) {
+    		device = stateDevice;
+    	}
+    	
+		@Override
+		public void run() {
+			log.info("Resetting " + device.getName());
+			StateDeviceManager.updateStateDevice(device.getId(), State.INACTIVE);
+		}
     }
 }
