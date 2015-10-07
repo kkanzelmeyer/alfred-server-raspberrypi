@@ -27,7 +27,8 @@ import com.google.protobuf.ByteString;
 
 /**
  * Server state handler for a doorbell device
- * @author kevin
+ * 
+ * @author Kevin Kanzelmeyer
  *
  */
 public class DoorbellStateHandler implements StateDeviceHandler {
@@ -36,7 +37,12 @@ public class DoorbellStateHandler implements StateDeviceHandler {
     private Builder messageBuilder;
     private Timer timer = null;
     private DoorbellResetTask resetTask = null;
-    
+
+    public DoorbellStateHandler() {
+        resetTask = new DoorbellResetTask();
+        timer = new Timer();
+    }
+
     @Override
     public void onAddDevice(StateDevice device) {
         log.info("Device added");
@@ -45,7 +51,7 @@ public class DoorbellStateHandler implements StateDeviceHandler {
 
     /**
      * This method starts a thread to capture an image with the webcam. It also
-     * starts building the message to send clients. The message is completed and 
+     * starts building the message to send clients. The message is completed and
      * sent in the TakePictureCallback
      */
     @Override
@@ -53,28 +59,26 @@ public class DoorbellStateHandler implements StateDeviceHandler {
         // Start building message
         log.info("Device updated" + device.toString());
         messageBuilder = StateDeviceMessage.newBuilder();
-        messageBuilder.setId(device.getId())
-                      .setType(Type.DOORBELL)
-                      .setName(device.getName())
-                      .setState(device.getState());
+        messageBuilder.setId(device.getId()).setType(Type.DOORBELL).setName(device.getName())
+                .setState(device.getState());
         // if the state is being set to Active, take a picture
         // and let the callback finish sending the message
-        
-        if(device.getState() == State.ACTIVE) {
-        	// Start a thread to take a picture from the webcam
+
+        if (device.getState() == State.ACTIVE) {
+            // Start a thread to take a picture from the webcam
             WebCameraThread webCamThread = new WebCameraThread(new TakePictureCallback());
             new Thread(webCamThread).start();
+            
             // start a reset timer
             startResetTimer(2, device);
-            
         } else {
-            // if the state is not being set to active, just send the 
+            // if the state is not being set to active, just send the
             // state update message
             sendMessage();
+            
             // cancel the timer
-            if(timer != null) {
-            	timer.cancel();
-            }
+            log.info("Cancelling reset timer");
+            timer.cancel();
         }
     }
 
@@ -83,32 +87,37 @@ public class DoorbellStateHandler implements StateDeviceHandler {
         log.info("Device removed");
         log.info(device.toString());
     }
-    
+
     /**
      * This helper method schedules the reset doorbell task
+     * 
      * @param minutes
      */
     public void startResetTimer(int minutes, StateDevice device) {
-    	resetTask = new DoorbellResetTask(device);
-        timer = new Timer();
+        resetTask.addDevice(device);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, minutes);
         Date endTime = calendar.getTime();
-        timer.schedule(resetTask, endTime);
+        log.info("Scheduling reset timer");
+        if (!resetTask.hasDevice()) {
+            log.error("Error - reset task does not have a registered device");
+        } else {
+            timer.schedule(resetTask, endTime);
+        }
     }
 
     /**
-     * Builds the message that is constructed in the message builder, then
-     * sends the message to each client connected to the server
+     * Builds the message that is constructed in the message builder, then sends
+     * the message to each client connected to the server
      */
     private void sendMessage() {
         // build message
         StateDeviceMessage deviceMessage = messageBuilder.build();
 
         // Send message to each client
-        if(Server.getConnectionCount() > 0) {
-            for(Socket socket : Server.getServerConnections()) {
-                if(socket.isConnected()) {
+        if (Server.getConnectionCount() > 0) {
+            for (Socket socket : Server.getServerConnections()) {
+                if (socket.isConnected()) {
                     try {
                         log.info("Sending message");
                         deviceMessage.writeDelimitedTo(socket.getOutputStream());
@@ -122,18 +131,18 @@ public class DoorbellStateHandler implements StateDeviceHandler {
     }
 
     /**
-     * This class is a callback to the webcam thread. The onComplete
-     * method is called by the webcam thread after the picture has been taken.
+     * This class is a callback to the webcam thread. The onComplete method is
+     * called by the webcam thread after the picture has been taken.
      * 
-     * @author Admin
+     * @author Kevin Kanzelmeyer
      *
      */
     private class TakePictureCallback implements WebCamCallback {
 
         /**
-         * This method adds the image to the message that was started in the parent
-         * class onDeviceUpdate method. After the message is built it is sent
-         * to each client connected to the server
+         * This method adds the image to the message that was started in the
+         * parent class onDeviceUpdate method. After the message is built it is
+         * sent to each client connected to the server
          */
         @Override
         public void onComplete(RenderedImage image) {
@@ -163,25 +172,44 @@ public class DoorbellStateHandler implements StateDeviceHandler {
             }
         }
     }
-    
+
     /**
-     * Class to reset the doorbell state to inactive. This timer task
-     * is scheduled by the parent class
-     * @author kanzelmeyer
+     * Class to reset the doorbell state to inactive. This timer task is
+     * scheduled by the parent class
+     * 
+     * @author Kevin Kanzelmeyer
      *
      */
     private class DoorbellResetTask extends TimerTask {
-    	
-    	private StateDevice device;
-    	
-    	public DoorbellResetTask(StateDevice stateDevice) {
-    		device = stateDevice;
-    	}
-    	
-		@Override
-		public void run() {
-			log.info("Resetting " + device.getName());
-			StateDeviceManager.updateStateDevice(device.getId(), State.INACTIVE);
-		}
+
+        private StateDevice device = null;
+
+        /**
+         * Method to add a state device for the reset task
+         * @param stateDevice
+         */
+        public void addDevice(StateDevice stateDevice) {
+            device = stateDevice;
+        }
+
+        /**
+         * Method to check if a device has been set
+         * @return
+         */
+        public boolean hasDevice() {
+            if (device != null)
+                return true;
+            else
+                return false;
+        }
+
+        /**
+         * Task to be executed when the timer scheduler calls it
+         */
+        @Override
+        public void run() {
+            log.info("Resetting " + device.getName());
+            StateDeviceManager.updateStateDevice(device.getId(), State.INACTIVE);
+        }
     }
 }

@@ -27,7 +27,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  * @author kevin
  *
  */
-public class DoorbellPlugin {
+public class DoorbellPlugin implements DevicePlugin {
 
     private int pin;
     private StateDevice device;
@@ -44,6 +44,7 @@ public class DoorbellPlugin {
     /**
      * Call this method to activate the plugin
      */
+    @Override
     public void activate() {
         // Raspberry pi handler
         log.info("Adding plugin for pin " + pin);
@@ -66,12 +67,12 @@ public class DoorbellPlugin {
         }
     }
 
-/**
- * This class handles input changes from the Raspberry Pi GPIO pins
- * @author kevin
- *
- */
-private class DoorbellHandler implements GpioPinListenerDigital {
+    /**
+     * This class handles input changes from the Raspberry Pi GPIO pins
+     * @author kevin
+     *
+     */
+    private class DoorbellHandler implements GpioPinListenerDigital {
         
         private StateDevice _device;
 
@@ -98,4 +99,5 @@ private class DoorbellHandler implements GpioPinListenerDigital {
             } 
         }
     }
+    
 }
