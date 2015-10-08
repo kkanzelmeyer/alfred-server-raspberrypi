@@ -1,7 +1,8 @@
 package com.alfred.server.plugins;
 
-public class SwitchDevicePlugin implements DevicePlugin {
+public class RPSwitchDevicePlugin implements DevicePlugin {
 
+    
     @Override
     public void activate() {
         // TODO Auto-generated method stub

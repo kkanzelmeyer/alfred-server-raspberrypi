@@ -7,7 +7,7 @@ import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
-import com.alfred.server.plugins.DoorbellPlugin;
+import com.alfred.server.plugins.RPDoorbellPlugin;
 import com.alfred.server.plugins.ServerConnectionPlugin;
 
 public class ServerApp {
@@ -33,7 +33,7 @@ public class ServerApp {
 
         // Create plugins
         ServerConnectionPlugin serverConnectionPlugin = new ServerConnectionPlugin();
-        DoorbellPlugin frontDoorPlugin = new DoorbellPlugin(13, doorbell.getId());
+        RPDoorbellPlugin frontDoorPlugin = new RPDoorbellPlugin(13, doorbell.getId());
         
         // Activate plugins
         serverConnectionPlugin.activate();

@@ -22,7 +22,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
-public class GarageDoorPlugin implements DevicePlugin {
+public class RPGarageDoorPlugin implements DevicePlugin {
 
     private int pin;
     private String myDeviceId;
@@ -32,7 +32,7 @@ public class GarageDoorPlugin implements DevicePlugin {
     private GarageDoorNetworkHandler networkHandler = null;
 
     // Logger
-    final private static Logger log = LoggerFactory.getLogger(DoorbellPlugin.class);
+    final private static Logger log = LoggerFactory.getLogger(RPDoorbellPlugin.class);
 
     @Override
     public void activate() {

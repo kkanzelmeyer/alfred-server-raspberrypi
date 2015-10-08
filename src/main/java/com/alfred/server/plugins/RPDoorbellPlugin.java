@@ -47,7 +47,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  * @author kevin
  *
  */
-public class DoorbellPlugin implements DevicePlugin {
+public class RPDoorbellPlugin implements DevicePlugin {
 
     private int pin;
     private String myDeviceId;
@@ -55,9 +55,9 @@ public class DoorbellPlugin implements DevicePlugin {
     private DoorbellStateHandler stateHandler = null;
     private DoorbellNetworkHandler networkHandler = null;
     
-    final private static Logger log = LoggerFactory.getLogger(DoorbellPlugin.class);
+    final private static Logger log = LoggerFactory.getLogger(RPDoorbellPlugin.class);
     
-    public DoorbellPlugin(int pin, String deviceId) {
+    public RPDoorbellPlugin(int pin, String deviceId) {
         this.pin = pin;
         this.myDeviceId = deviceId;
     }
