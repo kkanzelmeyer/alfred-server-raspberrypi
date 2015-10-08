@@ -153,7 +153,6 @@ public class DoorbellPlugin implements DevicePlugin {
 
         public DoorbellStateHandler() {
             resetTask = new DoorbellResetTask();
-            timer = new Timer();
         }
 
         
@@ -189,6 +188,7 @@ public class DoorbellPlugin implements DevicePlugin {
                     new Thread(webCamThread).start();
                     
                     // start a reset timer
+                    timer = new Timer();
                     startResetTimer(2, device);
                 } else {
                     // if the state is not being set to active, just send the
