@@ -8,11 +8,9 @@ import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
-import com.alfred.server.handlers.DoorbellStateHandler;
-import com.alfred.server.server.NewConnectionThread;
 
 /**
- * Unit test for simple App.
+ * Unit test for server app
  */
 public class StateTests{
 
@@ -33,12 +31,8 @@ public class StateTests{
         // Add device(s) to device manager
         StateDeviceManager.updateStateDevice(doorbell);
         
-        // Add state handlers for devices
-        StateDeviceManager.addDeviceHandler(new DoorbellStateHandler());
-        
         // update the state device
-        doorbell.setState(State.ACTIVE);
-        StateDeviceManager.updateStateDevice(doorbell);
+        StateDeviceManager.updateStateDevice(doorbell.getId(), State.ACTIVE);
         
         // test state
         StateDevice doorbellClone = StateDeviceManager.getDevice("doorbell1");

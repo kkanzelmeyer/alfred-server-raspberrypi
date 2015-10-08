@@ -11,7 +11,6 @@ import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.network.NetworkHandler;
-import com.alfred.server.handlers.ServerNetworkHandler;
 import com.alfred.server.server.Server;
 
 public class ServerConnectionPlugin implements DevicePlugin {
