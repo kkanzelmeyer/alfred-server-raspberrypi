@@ -195,9 +195,6 @@ public class DoorbellPlugin implements DevicePlugin {
                     // state update message
                     sendMessage();
                     
-                    // cancel the timer
-                    log.info("Cancelling reset timer");
-                    timer.cancel();
                 }
             }
         }
