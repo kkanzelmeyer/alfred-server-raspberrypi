@@ -33,7 +33,7 @@ public class ServerApp {
 
         // Create plugins
         ServerConnectionPlugin serverConnectionPlugin = new ServerConnectionPlugin();
-        DoorbellPlugin frontDoorPlugin = new DoorbellPlugin(13, doorbell);
+        DoorbellPlugin frontDoorPlugin = new DoorbellPlugin(13, doorbell.getId());
         
         // Activate plugins
         serverConnectionPlugin.activate();

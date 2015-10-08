@@ -43,7 +43,6 @@ public class ClientConnection implements Runnable {
                         if(msg == null) {
                             break;
                         }
-                        log.info(msg.toString());
                         
                         // notify handlers
                         Server.messageReceived(msg);

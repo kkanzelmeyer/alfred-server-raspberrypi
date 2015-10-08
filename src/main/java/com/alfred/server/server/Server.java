@@ -79,6 +79,7 @@ public class Server {
     public static void messageReceived(StateDeviceMessage msg) {
      // Notify Connection Handlers
         for(NetworkHandler handler : connectionHandlers) {
+            log.debug("Message Received: notifying handler " + handler);
             handler.onMessageReceived(msg);
         }
     }

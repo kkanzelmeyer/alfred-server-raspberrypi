@@ -50,16 +50,16 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 public class DoorbellPlugin implements DevicePlugin {
 
     private int pin;
-    private StateDevice myDevice;
+    private String myDeviceId;
     private GpioPinListenerDigital pinHandler = null;
     private DoorbellStateHandler stateHandler = null;
     private DoorbellNetworkHandler networkHandler = null;
     
     final private static Logger log = LoggerFactory.getLogger(DoorbellPlugin.class);
     
-    public DoorbellPlugin(int pin, StateDevice device) {
+    public DoorbellPlugin(int pin, String deviceId) {
         this.pin = pin;
-        this.myDevice = device;
+        this.myDeviceId = deviceId;
     }
 
     /**
@@ -69,7 +69,7 @@ public class DoorbellPlugin implements DevicePlugin {
     public void activate() {
         // Raspberry pi handler
         log.info("Adding plugin for pin " + pin);
-        pinHandler = new DoorbellSensorHandler(myDevice);
+        pinHandler = new DoorbellSensorHandler();
         GpioController gpio = GpioFactory.getInstance();
         GpioPinDigitalInput input = gpio.provisionDigitalInputPin(
                     PinConverter.ModelB.fromInt(pin),
@@ -112,18 +112,11 @@ public class DoorbellPlugin implements DevicePlugin {
      */
     private class DoorbellSensorHandler implements GpioPinListenerDigital {
         
-        private StateDevice _device;
-
-        public DoorbellSensorHandler(StateDevice device) {
-            _device = device;
-            System.out.println("Adding GPIO handler for " + device.getName());
-        }
-
         @Override
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
             if (event.getState() == PinState.HIGH) {
-                log.info(_device.getName() + " event detected : " + event.getState());
-                StateDevice deviceClone = StateDeviceManager.getDevice(_device.getId());
+                log.info(myDeviceId + " event detected : " + event.getState());
+                StateDevice deviceClone = StateDeviceManager.getDevice(myDeviceId);
                 State newState;
                 if (deviceClone.getState() != State.ACTIVE) {
                     newState = State.ACTIVE;
@@ -133,7 +126,7 @@ public class DoorbellPlugin implements DevicePlugin {
                 }
                 
                 // update the state
-                StateDeviceManager.updateStateDevice(_device.getId(), newState);
+                StateDeviceManager.updateStateDevice(myDeviceId, newState);
             } 
         }
     }
@@ -151,15 +144,11 @@ public class DoorbellPlugin implements DevicePlugin {
         private Timer timer = null;
         private DoorbellResetTask resetTask = null;
 
-        public DoorbellStateHandler() {
-            resetTask = new DoorbellResetTask();
-        }
-
         
         @Override
         public void onAddDevice(StateDevice device) {
             // filter message based on this plugin's device id
-            if(device.getId() == myDevice.getId()) {
+            if(device.getId().equals(myDeviceId)) {
                 log.info("Device added");
                 log.info(device.toString());
             }
@@ -173,7 +162,7 @@ public class DoorbellPlugin implements DevicePlugin {
         @Override
         public void onUpdateDevice(StateDevice device) {
             // filter message based on this plugin's device id
-            if(device.getId() == myDevice.getId()) {
+            if(device.getId().equals(myDeviceId)) {
                 // Start building message
                 log.info("Device updated" + device.toString());
                 messageBuilder = StateDeviceMessage.newBuilder();
@@ -202,7 +191,7 @@ public class DoorbellPlugin implements DevicePlugin {
         @Override
         public void onRemoveDevice(StateDevice device) {
             // filter message based on this plugin's device id
-            if(device.getId() == myDevice.getId()) {
+            if(device.getId().equals(myDeviceId)) {
                 log.info("Device removed");
                 log.info(device.toString());
             }
@@ -214,6 +203,7 @@ public class DoorbellPlugin implements DevicePlugin {
          * @param minutes
          */
         public void startResetTimer(int minutes, StateDevice device) {
+            resetTask = new DoorbellResetTask();
             resetTask.addDevice(device);
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.MINUTE, minutes);
@@ -337,12 +327,14 @@ public class DoorbellPlugin implements DevicePlugin {
     
     private class DoorbellNetworkHandler implements NetworkHandler {
 
+        @Override
         public void onConnect(Socket connection) {
             // Do nothing
         }
 
+        @Override
         public void onMessageReceived(StateDeviceMessage msg) {
-            if(msg != null && msg.getId() == myDevice.getId()) {
+            if(msg != null && msg.getId().equals(myDeviceId)) {
                 log.info("Doorbell update received: " + msg.toString());
                 StateDevice device = new StateDevice(msg);
                 StateDeviceManager.updateStateDevice(device);
