@@ -14,17 +14,13 @@ import com.alfred.common.network.NetworkHandler;
  * This class is the abstraction of the Alfred server connections. It maintains
  * a list of client connections and a list of connection handlers
  * 
- * @author kevin
- *
- */
-/**
- * @author kevin
+ * @author Kevin Kanzelmeyer
  *
  */
 public class Server {
 
     private static List<Socket> serverConnections = new ArrayList<Socket>();
-    private static List<NetworkHandler> connectionHandlers = new ArrayList<>();
+    private static List<NetworkHandler> networkHandlers = new ArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(Server.class);
     
     public static List<Socket> getServerConnections() {
@@ -38,7 +34,7 @@ public class Server {
         serverConnections.add(connection);
         log.info("New Connection added");
         // Notify Connection Handlers
-        for(NetworkHandler handler : connectionHandlers) {
+        for(NetworkHandler handler : networkHandlers) {
             handler.onConnect(connection);
         }
     }
@@ -59,17 +55,17 @@ public class Server {
     
     // Methods for adding and removing connection handlers
     
-    public static void addConnectionHandler(NetworkHandler handler) {
-        if(!connectionHandlers.contains(handler)) {
+    public static void addNetworkHandler(NetworkHandler handler) {
+        if(!networkHandlers.contains(handler)) {
             log.info("Adding server connection handler: " + handler.getClass());
-            connectionHandlers.add(handler);
+            networkHandlers.add(handler);
         }
     }
     
-    public static void removeConnectionHandler(NetworkHandler handler) {
-        if(connectionHandlers.contains(handler)) {
+    public static void removeNetworkHandler(NetworkHandler handler) {
+        if(networkHandlers.contains(handler)) {
             log.info("Removing server connection handler: " + handler.getClass());
-            connectionHandlers.remove(handler);
+            networkHandlers.remove(handler);
         }
     }
     
@@ -78,7 +74,7 @@ public class Server {
      */
     public static void messageReceived(StateDeviceMessage msg) {
      // Notify Connection Handlers
-        for(NetworkHandler handler : connectionHandlers) {
+        for(NetworkHandler handler : networkHandlers) {
             log.debug("Message Received: notifying handler " + handler);
             handler.onMessageReceived(msg);
         }

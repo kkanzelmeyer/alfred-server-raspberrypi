@@ -23,7 +23,7 @@ public class ServerConnectionPlugin implements DevicePlugin {
         if(newConnectionHandler == null) {
             log.info("Starting new connection handler");
             newConnectionHandler = new NewConnectionHandler();
-            Server.addConnectionHandler(newConnectionHandler);
+            Server.addNetworkHandler(newConnectionHandler);
         }
     }
     
@@ -31,7 +31,7 @@ public class ServerConnectionPlugin implements DevicePlugin {
     public void deactivate() {
         if(newConnectionHandler != null) {
             log.info("Removing new connection handler");
-            Server.removeConnectionHandler(newConnectionHandler);
+            Server.removeNetworkHandler(newConnectionHandler);
             newConnectionHandler = null;
         }
     }

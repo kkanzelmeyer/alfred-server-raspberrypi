@@ -86,7 +86,7 @@ public class DoorbellPlugin implements DevicePlugin {
         // Network handler
         if(networkHandler == null) {
             networkHandler = new DoorbellNetworkHandler();
-            Server.addConnectionHandler(networkHandler);
+            Server.addNetworkHandler(networkHandler);
         }
         
     }
@@ -100,7 +100,7 @@ public class DoorbellPlugin implements DevicePlugin {
         
         // Network handler
         if(networkHandler != null) {
-            Server.removeConnectionHandler(networkHandler);
+            Server.removeNetworkHandler(networkHandler);
             networkHandler = null;
         }
     }
