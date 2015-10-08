@@ -1,11 +1,11 @@
 # Alfred Home Server
-##_UNDER CONSTRUCTION_
+**_UNDER CONSTRUCTION_**
 
 ## Summary
-Project Alfred is a home monitoring server intended to be run on the Raspberry pi.
+Project Alfred is a home monitoring server intended to be run on the Raspberry Pi.
 It is designed to be flexible and allow users to add various input/output devices, 
 such as doorbells, garage doors, electrical outlets, ceiling fans, lights, etc, 
-throughout the home to be monitored and/or controlled by Alfred
+throughout the home to be monitored and/or controlled by Alfred.
 
 ## Architect Overview
 
@@ -20,20 +20,15 @@ with caution and at your own risk_**
 
 #### Summary
 
-Project Alfred implements a client / server synchronous data model, where the server
-and all clients maintain a synchronous state of all connected devices. This model is sometimes referred to as the "repository pattern". The application implements this pattern by
-maintaining a run time data model on the server and on each client. The nominal 
-operational structure is as follows:
+Project Alfred implements a repository pattern, where the server and all clients maintain a synchronous state of all connected devices. The application implements this pattern by maintaining a run time data model on the server and on each client, and clients / servers keep each other in sync through messages. The nominal operational flow is as follows:
 
 *On the Server:*
-
 1. Input is detected on the Pi
 2. Device is updated in Data Model
 3. Message is sent to each client containing updated device date
 
 
 *On the client:*
-
 1. Message is received from the server
 2. Device is updated in Data Model
 3. Client does something with the new data model (updates display, etc)
@@ -41,7 +36,6 @@ operational structure is as follows:
 #### Usage
 
 Each hardware device connected to the Pi should have a corresponding plugin on the server. The plugin contains a NetworkHandler, which handles incoming messages, and a StateDeviceHandler, which handles the behavior for the device's states. 
-
 
 ##### NetworkHandler
 The static Server class maintains a list of registered network handlers. When the server receives a message it notifies all registered handlers with an instance of the message. 
