@@ -87,10 +87,7 @@ public class RPGarageDoorPlugin implements DevicePlugin {
     }
 
     @Override
-    public void deactivate() {
-        // TODO Auto-generated method stub
-
-    }
+    public void deactivate() { }
 
     /**
      * Raspberry Pi hardware handler for the garage door sensor switch. This
@@ -115,7 +112,6 @@ public class RPGarageDoorPlugin implements DevicePlugin {
             // update the state device
             StateDeviceManager.updateStateDevice(myDeviceId, newState);
         }
-
     }
 
     /**
@@ -152,7 +148,6 @@ public class RPGarageDoorPlugin implements DevicePlugin {
 
         @Override
         public void onRemoveDevice(StateDevice device) { }
-
     }
 
     /**
@@ -183,6 +178,5 @@ public class RPGarageDoorPlugin implements DevicePlugin {
                 }
             }
         }
-
     }
 }

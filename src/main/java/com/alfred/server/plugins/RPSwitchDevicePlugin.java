@@ -58,7 +58,7 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
         // Raspberry Pi pin provisioning
         log.info("Adding plugin for pin " + pin);
         try {
-            // Create digital listener for ensor
+            // Create digital listener for sensor
             GpioController gpio = GpioFactory.getInstance();
             sensor = gpio.provisionDigitalInputPin(PinConverter.ModelB.fromInt(pin), "Sensor",
                     PinPullResistance.PULL_DOWN);
@@ -83,15 +83,10 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
             stateHandler = new SwitchDeviceStateHandler();
             Server.addNetworkHandler(networkHandler);
         }
-        
-
     }
 
     @Override
-    public void deactivate() {
-        // TODO Auto-generated method stub
-
-    }
+    public void deactivate() { }
 
     /**
      * Class to handler network traffic for the device. For a device which
@@ -156,10 +151,7 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
         }
 
         @Override
-        public void onRemoveDevice(StateDevice device) {
-            // TODO Auto-generated method stub
-            
-        }
+        public void onRemoveDevice(StateDevice device) { }
     }
 
     
@@ -184,6 +176,5 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
             // update the state device
             StateDeviceManager.updateStateDevice(myDeviceId, newState);
         }
-        
     }
 }

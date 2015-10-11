@@ -97,7 +97,7 @@ public class RPDoorbellPlugin implements DevicePlugin {
             Server.addNetworkHandler(networkHandler);
         }
     }
-    
+
     public void deactivate() {
      // State handler
         if(stateHandler != null) {
@@ -276,7 +276,5 @@ public class RPDoorbellPlugin implements DevicePlugin {
                 StateDeviceManager.updateStateDevice(device);
             }
         }
-        
     }
-    
 }

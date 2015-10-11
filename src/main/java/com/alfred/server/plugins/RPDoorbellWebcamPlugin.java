@@ -142,8 +142,7 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
             } 
         }
     }
-    
-    
+
     /**
      * The purpose of this class is to handle state changes to a doorbell device
      * 
@@ -183,9 +182,9 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
                               .setName(device.getName())
                               .setState(device
                               .getState());
+                
                 // if the state is being set to Active, take a picture
                 // and let the callback finish sending the message
-    
                 if (device.getState() == State.ACTIVE) {
                     // Start a thread to take a picture from the webcam
                     WebCameraThread webCamThread = new WebCameraThread(new TakePictureCallback());
@@ -328,9 +327,7 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
     private class DoorbellNetworkHandler implements NetworkHandler {
 
         @Override
-        public void onConnect(Socket connection) {
-            // Do nothing
-        }
+        public void onConnect(Socket connection) { }
 
         @Override
         public void onMessageReceived(StateDeviceMessage msg) {
@@ -340,7 +337,5 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
                 StateDeviceManager.updateStateDevice(device);
             }
         }
-        
     }
-    
 }
