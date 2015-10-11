@@ -79,6 +79,29 @@ public class Server {
             handler.onMessageReceived(msg);
         }
     }
+    
+    /**
+     * Helper method to send a state update message to all connected clients
+     * 
+     * @param device
+     */
+    public static void sendMessage(StateDeviceMessage msg) {
+
+        // Send message to each client
+        if (getConnectionCount() > 0) {
+            for (Socket socket : getServerConnections()) {
+                if (socket.isConnected()) {
+                    try {
+                        log.info("Sending message");
+                        msg.writeDelimitedTo(socket.getOutputStream());
+                    } catch (Exception e) {
+                        Server.removeServerConnection(socket);
+                        log.error("Writing to socket failed", e);
+                    }
+                }
+            }
+        }
+    }
 }
 
 

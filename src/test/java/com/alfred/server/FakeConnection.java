@@ -2,7 +2,6 @@ package com.alfred.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -40,7 +39,7 @@ public class FakeConnection implements Runnable {
                 if(_socket.isConnected()) {
                     StateDeviceMessage msg = StateDeviceMessage.parseDelimitedFrom(_socket.getInputStream());
                     log.info("Message Received from Server");
-//                    log.info("\n" + msg.toString());
+                    
                     // try to recreate image file from message
                     if(msg.hasData()) {
                         String imagePath = "/home/pi/Alfred/img/";

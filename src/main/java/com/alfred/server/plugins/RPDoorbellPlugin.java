@@ -38,11 +38,12 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 /**
  * Doorbell Plugin
  * 
- * This class handles the server behavior for a doorbell device. The general behavior is
- * that the sensor near the door (button, motion, etc) can set the device state to "active".
- * When the device is set to active it will send a message to all connected clients, and start
- * a reset timer that resets the device in "inactive" after two minutes. The plugin also listens
- * for incoming messages. If an incoming message sets the device state 
+ * This class handles the server behavior for a doorbell device. The general
+ * behavior is that the sensor near the door (button, motion, etc) can set the
+ * device state to "active". When the device is set to active it will send a
+ * message to all connected clients, and start a reset timer that resets the
+ * device in "inactive" after two minutes. The plugin also listens for incoming
+ * messages. If an incoming message sets the device state
  * 
  * @author kevin
  *
@@ -88,7 +89,6 @@ public class RPDoorbellPlugin implements DevicePlugin {
             networkHandler = new DoorbellNetworkHandler();
             Server.addNetworkHandler(networkHandler);
         }
-        
     }
     
     public void deactivate() {
@@ -166,8 +166,11 @@ public class RPDoorbellPlugin implements DevicePlugin {
                 // Start building message
                 log.info("Device updated" + device.toString());
                 messageBuilder = StateDeviceMessage.newBuilder();
-                messageBuilder.setId(device.getId()).setType(Type.DOORBELL).setName(device.getName())
-                        .setState(device.getState());
+                messageBuilder.setId(device.getId())
+                              .setType(Type.DOORBELL)
+                              .setName(device.getName())
+                              .setState(device
+                              .getState());
                 // if the state is being set to Active, take a picture
                 // and let the callback finish sending the message
     
@@ -182,7 +185,8 @@ public class RPDoorbellPlugin implements DevicePlugin {
                 } else {
                     // if the state is not being set to active, just send the
                     // state update message
-                    sendMessage();
+                    StateDeviceMessage msg = messageBuilder.build();
+                    Server.sendMessage(msg);
                     
                 }
             }
@@ -216,29 +220,6 @@ public class RPDoorbellPlugin implements DevicePlugin {
             }
         }
 
-        /**
-         * Builds the message that is constructed in the message builder, then sends
-         * the message to each client connected to the server
-         */
-        private void sendMessage() {
-            // build message
-            StateDeviceMessage deviceMessage = messageBuilder.build();
-
-            // Send message to each client
-            if (Server.getConnectionCount() > 0) {
-                for (Socket socket : Server.getServerConnections()) {
-                    if (socket.isConnected()) {
-                        try {
-                            log.info("Sending message");
-                            deviceMessage.writeDelimitedTo(socket.getOutputStream());
-                        } catch (Exception e) {
-                            Server.removeServerConnection(socket);
-                            log.error("Writing to socket failed", e);
-                        }
-                    }
-                }
-            }
-        }
 
         /**
          * This class is a callback to the webcam thread. The onComplete method is
@@ -263,7 +244,8 @@ public class RPDoorbellPlugin implements DevicePlugin {
                     ImageIO.write(image, "jpg", baos);
                     byte[] imageBytes = baos.toByteArray();
                     messageBuilder.setData(ByteString.copyFrom(imageBytes));
-                    sendMessage();
+                    StateDeviceMessage msg = messageBuilder.build();
+                    Server.sendMessage(msg);
                 } catch (IOException e1) {
                     log.error("Unable to read image file" + image, e1);
                 }
