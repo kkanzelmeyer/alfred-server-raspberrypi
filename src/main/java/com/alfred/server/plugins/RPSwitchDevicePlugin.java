@@ -21,33 +21,52 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-
+/**
+ * Raspberry Pi Plugin for a switch device. This plugin has four primary
+ * components:
+ * 
+ * <ul>
+ * <li><b>Sensor:</b> The sensor is placed so that it can detect if the device
+ * is on or off</li>
+ * <li><b>Relay:</b> The relay or MOSFET is the switching device controlled by the Pi
+ * that switches current to the device</li>
+ * <li><b>Network Handler:</b> The network handler handles messages
+ * sent to the Alfred server. This handler is responsible updating the state in
+ * the device manager and for switching the device on and off based on the state
+ * in the message</li>
+ * <li><b>State Handler:</b> The state handler is responsible for notifying all
+ * clients when the state changes</li>
+ * </ul>
+ * 
+ * @author kanzelmeyer
+ *
+ */
 public class RPSwitchDevicePlugin implements DevicePlugin {
 
     private int pin;
     private String myDeviceId;
     private GpioPinDigitalInput sensor = null;
-    private GpioPinDigitalOutput button = null;
+    private GpioPinDigitalOutput relay = null;
     private SwitchDeviceNetworkHandler networkHandler = null;
     private SwitchDeviceStateHandler stateHandler = null;
     
     // Logger
-    final private static Logger log = LoggerFactory.getLogger(RPDoorbellPlugin.class);
+    final private static Logger log = LoggerFactory.getLogger(RPDoorbellWebcamPlugin.class);
     
     @Override
     public void activate() {
         // Raspberry Pi pin provisioning
         log.info("Adding plugin for pin " + pin);
         try {
-            // Create digital listener for garage door sensor
+            // Create digital listener for ensor
             GpioController gpio = GpioFactory.getInstance();
             sensor = gpio.provisionDigitalInputPin(PinConverter.ModelB.fromInt(pin), "Sensor",
                     PinPullResistance.PULL_DOWN);
             sensor.addListener(new SwitchSensorHandler());
 
-            // create digital output for garage door button
-            button = gpio.provisionDigitalOutputPin(PinConverter.ModelB.fromInt(pin),
-                    "Button",
+            // create digital output for the relay switch
+            relay = gpio.provisionDigitalOutputPin(PinConverter.ModelB.fromInt(pin),
+                    "Relay",
                     PinState.LOW);
         } catch (Exception e) {
             log.error("Exception caught", e);
@@ -97,9 +116,9 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
                 
                 // Set the device switch based on the message command
                 if(msg.getState() == State.ON) {
-                    button.setState(PinState.HIGH);
+                    relay.setState(PinState.HIGH);
                 } else {
-                    button.setState(PinState.LOW);
+                    relay.setState(PinState.LOW);
                 }
             }
         }

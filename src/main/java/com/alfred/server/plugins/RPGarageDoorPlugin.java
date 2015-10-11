@@ -22,6 +22,26 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
+/**
+ * Raspberry Pi Plugin for a garage door. This plugin has four primary
+ * components:
+ * 
+ * <ul>
+ * <li><b>Sensor:</b> The sensor is placed on the garage door frame to detect if
+ * the garage door is open or closed</li>
+ * <li><b>Button:</b> The button is the relay or MOSFET controlled by the Pi
+ * connected in parallel to the button input on the garage door motor</li>
+ * <li><b>Network Handler:</b> The network handler handles messages
+ * sent to the Alfred server. This handler is responsible updating the state in
+ * the device manager and for "pressing" the button to open and close the garage
+ * door</li>
+ * <li><b>State Handler:</b> The state handler is responsible for notifying all
+ * clients when the state changes</li>
+ * </ul>
+ * 
+ * @author kanzelmeyer
+ *
+ */
 public class RPGarageDoorPlugin implements DevicePlugin {
 
     private int pin;
@@ -32,7 +52,7 @@ public class RPGarageDoorPlugin implements DevicePlugin {
     private GarageDoorNetworkHandler networkHandler = null;
 
     // Logger
-    final private static Logger log = LoggerFactory.getLogger(RPDoorbellPlugin.class);
+    final private static Logger log = LoggerFactory.getLogger(RPDoorbellWebcamPlugin.class);
 
     @Override
     public void activate() {
@@ -73,7 +93,9 @@ public class RPGarageDoorPlugin implements DevicePlugin {
     }
 
     /**
-     * Raspberry Pi hardware handler for the garage door sensor switch
+     * Raspberry Pi hardware handler for the garage door sensor switch. This
+     * handler only needs to be responsible for updating the state based on the
+     * reading of the sensor
      * 
      * @author kkanzelmeyer
      *
@@ -97,7 +119,9 @@ public class RPGarageDoorPlugin implements DevicePlugin {
     }
 
     /**
-     * State handler for a garage door device
+     * State handler for a garage door device. The state handler only needs
+     * to be responsible for sending a message to clients when the state is
+     * updated
      * 
      * @author kanzelmeyer
      *
@@ -127,11 +151,18 @@ public class RPGarageDoorPlugin implements DevicePlugin {
         }
 
         @Override
-        public void onRemoveDevice(StateDevice device) {
-        }
+        public void onRemoveDevice(StateDevice device) { }
 
     }
 
+    /**
+     * Message handler for the garage door. The message handler needs to be
+     * responsible for opening and closing the garage door based on an incoming
+     * message
+     * 
+     * @author kanzelmeyer
+     *
+     */
     private class GarageDoorNetworkHandler implements NetworkHandler {
 
         @Override
