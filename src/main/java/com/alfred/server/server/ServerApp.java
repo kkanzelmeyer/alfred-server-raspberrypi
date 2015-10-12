@@ -21,6 +21,7 @@ public class ServerApp {
 
         log.info("Starting Alfred Server");
         // TODO load settings from configuration file
+        Server.loadProperties();
 
         // create new device(s)
         StateDevice doorbell = new StateDevice.Builder()
@@ -33,6 +34,7 @@ public class ServerApp {
         StateDeviceManager.addStateDevice(doorbell);
 
         // Create plugins
+        // TODO create plugin manager
         ServerConnectionPlugin serverConnectionPlugin = new ServerConnectionPlugin();
         RPDoorbellWebcamPlugin frontDoorPlugin = new RPDoorbellWebcamPlugin(13, doorbell.getId());
         
@@ -41,7 +43,9 @@ public class ServerApp {
         frontDoorPlugin.activate();
 
         // start server thread
-        Thread server = new Thread(new NewConnectionThread("192.168.1.25", "56"));
+        Thread server = 
+                new Thread(new NewConnectionThread(Server.getProperty(Server.HOST_ADDRESS),
+                                                   Server.getProperty(Server.HOST_PORT)));
         server.start();
 
         // keep alive

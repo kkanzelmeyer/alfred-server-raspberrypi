@@ -8,6 +8,8 @@ import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
+import com.alfred.server.server.Server;
+import com.alfred.server.utils.VisitorEmail;
 
 /**
  * Unit test for server app
@@ -37,6 +39,29 @@ public class StateTests{
         // test state
         StateDevice doorbellClone = StateDeviceManager.getDevice("doorbell1");
         assertEquals("Doorbell state is active", doorbellClone.getState(), State.ACTIVE);
+    }
+    
+    /**
+     * Email test
+     */
+//    @Test
+//    public void sendEmail() {
+//        Server.loadProperties();
+//        VisitorEmail email = new VisitorEmail();
+//        email.setDate(String.valueOf(System.currentTimeMillis()));
+//        email.setSubject("Visitor at the Front Door");
+//        email.setImagePath("/home/kevin/Downloads/visitor1444667076.jpg");
+//        email.build();
+//        Server.sendEmail(email);
+//    }
+//    
+    /**
+     * Properties test
+     */
+    @Test
+    public void propertiesTest() {
+        Server.loadProperties();
+        System.out.println(Server.getProperty(Server.IMAGE_PATH));
     }
 
 }

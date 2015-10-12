@@ -1,14 +1,27 @@
 package com.alfred.server.server;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.network.NetworkHandler;
+import com.alfred.server.utils.Email;
 
 /**
  * This class is the abstraction of the Alfred server connections. It maintains
@@ -23,7 +36,43 @@ public class Server {
     private static List<String> smsClients = new ArrayList<String>();
     private static List<NetworkHandler> networkHandlers = new ArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(Server.class);
+    private static Properties properties = null;
     
+    /* ------------------------------------------------------------------
+     *   PROPERTIES
+     * ------------------------------------------------------------------*/
+    public static final String EMAIL_USERNAME = "mail.username";
+    public static final String EMAIL_TOKEN = "mail.token";
+    public static final String HOST_ADDRESS = "alfred.hostaddress";
+    public static final String HOST_PORT = "alfred.hostport";
+    public static final String IMAGE_PATH = "alfred.imagepath";
+    
+    public static void loadProperties() {
+        if(properties == null) {
+            properties = new Properties();
+            try {
+                InputStream input = new FileInputStream("cfg/config.properties");
+                properties.load(input);
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public static Properties getProperties() {
+        return properties;
+    }
+    
+    public static String getProperty(String key) {
+        if(properties.containsKey(key)) {
+            return properties.getProperty(key);
+        } else 
+            return null;
+    }
+    
+    /* ------------------------------------------------------------------
+     *   CONNECTIONS
+     * ------------------------------------------------------------------*/
     public static List<Socket> getServerConnections() {
         return serverConnections;
     }
@@ -53,7 +102,7 @@ public class Server {
     }
 
     /* ------------------------------------------------------------------
-     *   Methods for adding and removing SMS Clients
+     *   EMAIL CLIENTS
      * ------------------------------------------------------------------*/
     
     public static List<String> getSMSClients() {
@@ -77,7 +126,7 @@ public class Server {
     }
 
     /* ------------------------------------------------------------------
-     *   Methods for adding and removing connection handlers
+     *   CONNECTION HANDLERS
      * ------------------------------------------------------------------*/
     
     public static void addNetworkHandler(NetworkHandler handler) {
@@ -123,6 +172,41 @@ public class Server {
                     log.error("Writing to socket failed", e);
                 }
             }
+        }
+    }
+    
+    /**
+     * Email function
+     */
+    public static void sendEmail(Email email) {
+        if(properties == null) {
+            loadProperties();
+        }
+        final String username = getProperty(EMAIL_USERNAME);
+        final String password = getProperty(EMAIL_TOKEN);
+
+        Session session = Session.getInstance(getProperties(), new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setRecipients(Message.RecipientType.TO,
+                InternetAddress.parse("kevin.kanzelmeyer@gmail.com"));
+            message.setSubject(email.getSubject());
+            
+            // put everything together
+            message.setContent(email.getContent());
+
+            Transport.send(message);
+
+            System.out.println("Done");
+
+        } catch (MessagingException e) {
+            log.error("Email error", e);
+            throw new RuntimeException(e);
         }
     }
 }

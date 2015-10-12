@@ -25,6 +25,7 @@ import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
 import com.alfred.common.network.NetworkHandler;
 import com.alfred.server.server.Server;
 import com.alfred.server.utils.PinConverter;
+import com.alfred.server.utils.VisitorEmail;
 import com.google.protobuf.ByteString;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -250,12 +251,12 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
             public void onComplete(RenderedImage image) {
                 log.info("Finished taking picture. Adding to message");
                 // Send the message
+                StateDeviceMessage msg = messageBuilder.build();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ImageIO.write(image, "jpg", baos);
                     byte[] imageBytes = baos.toByteArray();
                     messageBuilder.setData(ByteString.copyFrom(imageBytes));
-                    StateDeviceMessage msg = messageBuilder.build();
                     Server.sendMessage(msg);
                 } catch (IOException e1) {
                     log.error("Unable to read image file" + image, e1);
@@ -263,8 +264,10 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
 
                 // Save the image to a file
                 log.info("Saving image file on server");
-                String filepath = "/home/pi/Alfred/img/";
-                String filename = "visitor" + System.currentTimeMillis() / 1000L + ".jpg";
+//                String filepath = "/home/pi/Alfred/img/";
+                String filepath = Server.getProperty(Server.IMAGE_PATH);
+                String date = String.valueOf(System.currentTimeMillis() / 1000L);
+                String filename = "visitor" + date + ".jpg";
                 try {
                     File outputfile = new File(filepath + filename);
                     ImageIO.write(image, "jpg", outputfile);
@@ -273,6 +276,13 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                
+                // send email
+                VisitorEmail email = new VisitorEmail();
+                email.setDate(date);
+                email.setImagePath(filepath + filename);
+                email.setSubject("Visitor at the " + msg.getName());
+                Server.sendEmail(email);
             }
         }
 
