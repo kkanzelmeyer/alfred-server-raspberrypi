@@ -20,6 +20,7 @@ public class ServerApp {
                 + "\n-----------------------------------------------------------" + "\n");
 
         log.info("Starting Alfred Server");
+        // TODO load settings from configuration file
 
         // create new device(s)
         StateDevice doorbell = new StateDevice.Builder()

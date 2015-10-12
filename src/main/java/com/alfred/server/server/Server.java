@@ -20,13 +20,14 @@ import com.alfred.common.network.NetworkHandler;
 public class Server {
 
     private static List<Socket> serverConnections = new ArrayList<Socket>();
+    private static List<String> smsClients = new ArrayList<String>();
     private static List<NetworkHandler> networkHandlers = new ArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(Server.class);
     
     public static List<Socket> getServerConnections() {
         return serverConnections;
     }
-    
+
     /**
      * @param connection
      */
@@ -38,8 +39,7 @@ public class Server {
             handler.onConnect(connection);
         }
     }
-    
-    
+
     /**
      * @param connection
      */
@@ -47,13 +47,38 @@ public class Server {
         serverConnections.remove(connection);
         log.info("Connection removed");
     }
-    
-    
+
     public static int getConnectionCount() {
         return serverConnections.size();
     }
+
+    /* ------------------------------------------------------------------
+     *   Methods for adding and removing SMS Clients
+     * ------------------------------------------------------------------*/
     
-    // Methods for adding and removing connection handlers
+    public static List<String> getSMSClients() {
+        return smsClients;
+    }
+    
+    /**
+     * @param phoneNumber
+     */
+    public static void addSMSClient(String phoneNumber) {
+        smsClients.add(phoneNumber);
+        log.info("New Connection added");
+    }
+
+    /**
+     * @param phoneNumber
+     */
+    public static void removeSMSClient(String phoneNumber) {
+        smsClients.remove(phoneNumber);
+        log.info("Connection removed");
+    }
+
+    /* ------------------------------------------------------------------
+     *   Methods for adding and removing connection handlers
+     * ------------------------------------------------------------------*/
     
     public static void addNetworkHandler(NetworkHandler handler) {
         if(!networkHandlers.contains(handler)) {
@@ -88,16 +113,14 @@ public class Server {
     public static void sendMessage(StateDeviceMessage msg) {
 
         // Send message to each client
-        if (getConnectionCount() > 0) {
-            for (Socket socket : getServerConnections()) {
-                if (socket.isConnected()) {
-                    try {
-                        log.info("Sending message");
-                        msg.writeDelimitedTo(socket.getOutputStream());
-                    } catch (Exception e) {
-                        Server.removeServerConnection(socket);
-                        log.error("Writing to socket failed", e);
-                    }
+        for (Socket socket : getServerConnections()) {
+            if (socket.isConnected()) {
+                try {
+                    log.info("Sending message");
+                    msg.writeDelimitedTo(socket.getOutputStream());
+                } catch (Exception e) {
+                    Server.removeServerConnection(socket);
+                    log.error("Writing to socket failed", e);
                 }
             }
         }

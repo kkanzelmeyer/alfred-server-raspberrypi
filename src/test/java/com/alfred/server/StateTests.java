@@ -38,6 +38,5 @@ public class StateTests{
         StateDevice doorbellClone = StateDeviceManager.getDevice("doorbell1");
         assertEquals("Doorbell state is active", doorbellClone.getState(), State.ACTIVE);
     }
-    
 
 }

@@ -262,10 +262,10 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
                 }
 
                 // Save the image to a file
+                log.info("Saving image file on server");
+                String filepath = "/home/pi/Alfred/img/";
+                String filename = "visitor" + System.currentTimeMillis() / 1000L + ".jpg";
                 try {
-                    log.info("Saving image file on server");
-                    String filepath = "/home/pi/Alfred/img/";
-                    String filename = "visitor" + System.currentTimeMillis() / 1000L + ".jpg";
                     File outputfile = new File(filepath + filename);
                     ImageIO.write(image, "jpg", outputfile);
                     log.info("Finished saving");
