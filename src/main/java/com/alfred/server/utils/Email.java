@@ -9,9 +9,7 @@ public abstract class Email {
     
     private String subject;
     private String date;
-    private String imagePath;
-    protected MimeMultipart content;
-    
+    private String imagePath;    
     
     public String getSubject() {
         return subject;
@@ -23,7 +21,7 @@ public abstract class Email {
     public String getDisplayDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(Long.valueOf(date));
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d, y 'at' h:m:s a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d, y 'at' hh:mm:ss a");
         String displayDate = dateFormat.format(calendar.getTime());
         return displayDate;
     }
@@ -38,13 +36,9 @@ public abstract class Email {
         this.imagePath = imagePath;
     }
     
-    public MimeMultipart getContent() {
-        return content;
-    }
-    
     /**
-     * This method should be overriden and set the content value
-     * of the email parent class
+     * This method should be used by child classes to create
+     * the message content
      */
-    public abstract void build();
+    public abstract MimeMultipart getContent();
 }

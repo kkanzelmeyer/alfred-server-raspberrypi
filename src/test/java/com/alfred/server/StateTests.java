@@ -2,6 +2,7 @@ package com.alfred.server;
 
 import static org.junit.Assert.assertEquals;
 
+import org.bridj.util.StringUtils;
 import org.junit.Test;
 
 import com.alfred.common.datamodel.StateDevice;
@@ -46,6 +47,8 @@ public class StateTests{
      */
 //    @Test
 //    public void sendEmail() {
+//        String email1 = "kanzelm4@gmail.com";
+//        Server.addEmailClient(email1);
 //        Server.loadProperties();
 //        VisitorEmail email = new VisitorEmail();
 //        email.setDate(String.valueOf(System.currentTimeMillis()));
@@ -54,14 +57,28 @@ public class StateTests{
 //        email.build();
 //        Server.sendEmail(email);
 //    }
-//    
+
+    @Test
+    public void syntaxTest() {
+        String email1 = "kanzelm4@gmail.com";
+        String email2 = "kevin.kanzelmeyer@gmail.com";
+        Server.addEmailClient(email1);
+        Server.addEmailClient(email2);
+        String clients = StringUtils.implode(Server.getEmailClients(), ",");
+        System.out.println(clients);
+        assertEquals(email1 + "," + email2, clients);
+    }
+    
     /**
      * Properties test
      */
     @Test
     public void propertiesTest() {
         Server.loadProperties();
-        System.out.println(Server.getProperty(Server.IMAGE_PATH));
+        String[] emails = Server.getProperty(Server.EMAIL_CLIENTS).split(",");
+        for(String email : emails) {
+            System.out.println(email);
+        }
     }
 
 }

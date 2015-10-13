@@ -7,7 +7,7 @@ import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
-import com.alfred.server.plugins.RPDoorbellWebcamPlugin;
+import com.alfred.server.plugins.RPDoorbellPluginWebcam;
 import com.alfred.server.plugins.ServerConnectionPlugin;
 
 public class ServerApp {
@@ -15,34 +15,52 @@ public class ServerApp {
     private static final Logger log = LoggerFactory.getLogger(ServerApp.class);
 
     public static void main(String[] args) {
-        log.info("\n-----------------------------------------------------------"
+        log.info( "\n-----------------------------------------------------------"
                 + "\n             Alfred Home Server"
-                + "\n-----------------------------------------------------------" + "\n");
-
+                + "\n-----------------------------------------------------------" 
+                + "\n");
         log.info("Starting Alfred Server");
-        // TODO load settings from configuration file
+
+        // Load configuration properties into server class
         Server.loadProperties();
 
+        /* -------------------------------------------------------------------
+         *  DEVICES
+         * -------------------------------------------------------------------*/
         // create new device(s)
         StateDevice doorbell = new StateDevice.Builder()
                 .setId("doorbell1")
                 .setName("Front Door")
                 .setType(Type.DOORBELL)
                 .setState(State.INACTIVE).build();
-
         // Add device(s) to device manager
         StateDeviceManager.addStateDevice(doorbell);
 
-        // Create plugins
+        /* -------------------------------------------------------------------
+         *  PLUGINS
+         * -------------------------------------------------------------------*/
         // TODO create plugin manager
-        ServerConnectionPlugin serverConnectionPlugin = new ServerConnectionPlugin();
-        RPDoorbellWebcamPlugin frontDoorPlugin = new RPDoorbellWebcamPlugin(13, doorbell.getId());
-        
+        ServerConnectionPlugin serverConnectionPlugin = 
+                new ServerConnectionPlugin();
+        RPDoorbellPluginWebcam frontDoorPlugin = 
+                new RPDoorbellPluginWebcam(13, doorbell.getId());
         // Activate plugins
         serverConnectionPlugin.activate();
         frontDoorPlugin.activate();
+        
+        /* -------------------------------------------------------------------
+         *  EMIAL CLIENTS
+         * -------------------------------------------------------------------*/
+        String[] emails = Server.getProperty(Server.EMAIL_CLIENTS).split(",");
+        for(String email : emails) {
+            if(!email.equals("")) {
+                Server.addEmailClient(email);
+            }
+        }
 
-        // start server thread
+        /* -------------------------------------------------------------------
+         *  START SERVER
+         * -------------------------------------------------------------------*/
         Thread server = 
                 new Thread(new NewConnectionThread(Server.getProperty(Server.HOST_ADDRESS),
                                                    Server.getProperty(Server.HOST_PORT)));

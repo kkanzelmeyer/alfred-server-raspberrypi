@@ -62,7 +62,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  * @author kevin
  *
  */
-public class RPDoorbellWebcamPlugin implements DevicePlugin {
+public class RPDoorbellPluginWebcam implements DevicePlugin {
 
     private int pin;
     private String myDeviceId;
@@ -70,9 +70,9 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
     private DoorbellStateHandler stateHandler = null;
     private DoorbellNetworkHandler networkHandler = null;
     
-    final private static Logger log = LoggerFactory.getLogger(RPDoorbellWebcamPlugin.class);
+    final private static Logger log = LoggerFactory.getLogger(RPDoorbellPluginWebcam.class);
     
-    public RPDoorbellWebcamPlugin(int pin, String deviceId) {
+    public RPDoorbellPluginWebcam(int pin, String deviceId) {
         this.pin = pin;
         this.myDeviceId = deviceId;
     }
@@ -177,6 +177,7 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
             if(device.getId().equals(myDeviceId)) {
                 // Start building message
                 log.info("Device updated" + device.toString());
+                log.info("Updated device on thread " + Thread.currentThread().getId());
                 messageBuilder = StateDeviceMessage.newBuilder();
                 messageBuilder.setId(device.getId())
                               .setType(Type.DOORBELL)
@@ -244,19 +245,21 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
 
             /**
              * This method adds the image to the message that was started in the
-             * parent class onDeviceUpdate method. After the message is built it is
-             * sent to each client connected to the server
+             * parent class onDeviceUpdate method. After the message is built it
+             * is sent to each client, then the image is saved as a file, then
+             * an email is sent to email clients
              */
             @Override
             public void onComplete(RenderedImage image) {
                 log.info("Finished taking picture. Adding to message");
                 // Send the message
-                StateDeviceMessage msg = messageBuilder.build();
+                StateDeviceMessage msg = null;
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
                     ImageIO.write(image, "jpg", baos);
                     byte[] imageBytes = baos.toByteArray();
                     messageBuilder.setData(ByteString.copyFrom(imageBytes));
+                    msg = messageBuilder.build();
                     Server.sendMessage(msg);
                 } catch (IOException e1) {
                     log.error("Unable to read image file" + image, e1);
@@ -264,9 +267,8 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
 
                 // Save the image to a file
                 log.info("Saving image file on server");
-//                String filepath = "/home/pi/Alfred/img/";
                 String filepath = Server.getProperty(Server.IMAGE_PATH);
-                String date = String.valueOf(System.currentTimeMillis() / 1000L);
+                String date = String.valueOf(System.currentTimeMillis());
                 String filename = "visitor" + date + ".jpg";
                 try {
                     File outputfile = new File(filepath + filename);
@@ -278,6 +280,9 @@ public class RPDoorbellWebcamPlugin implements DevicePlugin {
                 }
                 
                 // send email
+                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+                log.info("Sending email to email clients");
+                log.info("Creating email on thread " + Thread.currentThread().getId());
                 VisitorEmail email = new VisitorEmail();
                 email.setDate(date);
                 email.setImagePath(filepath + filename);

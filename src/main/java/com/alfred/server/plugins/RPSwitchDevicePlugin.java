@@ -51,7 +51,7 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
     private SwitchDeviceStateHandler stateHandler = null;
     
     // Logger
-    final private static Logger log = LoggerFactory.getLogger(RPDoorbellWebcamPlugin.class);
+    final private static Logger log = LoggerFactory.getLogger(RPSwitchDevicePlugin.class);
     
     @Override
     public void activate() {

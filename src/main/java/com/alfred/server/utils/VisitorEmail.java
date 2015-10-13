@@ -11,9 +11,8 @@ import javax.mail.internet.MimeMultipart;
 public class VisitorEmail extends Email {
 
     @Override
-    public void build() {
+    public MimeMultipart getContent() {
         MimeMultipart multipart = new MimeMultipart("related");
-        
         // first part (the html)
         BodyPart messageBodyPart = new MimeBodyPart();
         String htmlText = "<h3>" + getDisplayDate() + "</h3>"
@@ -36,7 +35,7 @@ public class VisitorEmail extends Email {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        content = multipart;
+        return multipart;
     }
 
 }

@@ -52,7 +52,7 @@ public class RPGarageDoorPlugin implements DevicePlugin {
     private GarageDoorNetworkHandler networkHandler = null;
 
     // Logger
-    final private static Logger log = LoggerFactory.getLogger(RPDoorbellWebcamPlugin.class);
+    final private static Logger log = LoggerFactory.getLogger(RPGarageDoorPlugin.class);
 
     @Override
     public void activate() {

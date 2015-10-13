@@ -16,6 +16,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.bridj.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,21 +33,29 @@ import com.alfred.server.utils.Email;
  */
 public class Server {
 
-    private static List<Socket> serverConnections = new ArrayList<Socket>();
-    private static List<String> smsClients = new ArrayList<String>();
-    private static List<NetworkHandler> networkHandlers = new ArrayList<>();
+    private static ArrayList<Socket> serverConnections = new ArrayList<Socket>();
+    private static List<String> emailClients = new ArrayList<String>();
+    private static ArrayList<NetworkHandler> networkHandlers = new ArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(Server.class);
     private static Properties properties = null;
     
     /* ------------------------------------------------------------------
      *   PROPERTIES
      * ------------------------------------------------------------------*/
+    // convenient constants for getting property keys
     public static final String EMAIL_USERNAME = "mail.username";
-    public static final String EMAIL_TOKEN = "mail.token";
-    public static final String HOST_ADDRESS = "alfred.hostaddress";
-    public static final String HOST_PORT = "alfred.hostport";
-    public static final String IMAGE_PATH = "alfred.imagepath";
+    public static final String EMAIL_TOKEN    = "mail.token";
+    public static final String HOST_ADDRESS   = "alfred.hostaddress";
+    public static final String HOST_PORT      = "alfred.hostport";
+    public static final String IMAGE_PATH     = "alfred.imagepath";
+    public static final String EMAIL_CLIENTS  = "alfred.emailclients";
     
+    /**
+     * Method to load properties from the configuration file. Your configuration
+     * file should be in {project root}/cfg as notated below. The configuration
+     * property keys should match the string values in the above server
+     * constants
+     */
     public static void loadProperties() {
         if(properties == null) {
             properties = new Properties();
@@ -59,10 +68,21 @@ public class Server {
         }
     }
     
+    /**
+     * Method to return the properties object
+     * @return
+     */
     public static Properties getProperties() {
         return properties;
     }
     
+    /**
+     * Method to get the property value of a given key. Note that the keys can
+     * be easily captured using the above server constants
+     * 
+     * @param key
+     * @return
+     */
     public static String getProperty(String key) {
         if(properties.containsKey(key)) {
             return properties.getProperty(key);
@@ -78,6 +98,8 @@ public class Server {
     }
 
     /**
+     * Method to add a server connection
+     * 
      * @param connection
      */
     public static void addServerConnection(Socket connection) {
@@ -90,6 +112,8 @@ public class Server {
     }
 
     /**
+     * Method to remove a server connection
+     * 
      * @param connection
      */
     public static void removeServerConnection(Socket connection) {
@@ -97,6 +121,11 @@ public class Server {
         log.info("Connection removed");
     }
 
+    /**
+     * Method to count the number of active server socket connections
+     * 
+     * @return
+     */
     public static int getConnectionCount() {
         return serverConnections.size();
     }
@@ -104,31 +133,45 @@ public class Server {
     /* ------------------------------------------------------------------
      *   EMAIL CLIENTS
      * ------------------------------------------------------------------*/
-    
-    public static List<String> getSMSClients() {
-        return smsClients;
+    /**
+     * Method to fetch all email clients
+     * 
+     * @return
+     */
+    public static List<String> getEmailClients() {
+        return emailClients;
     }
     
     /**
-     * @param phoneNumber
+     * Method to add an email client
+     * 
+     * @param email
      */
-    public static void addSMSClient(String phoneNumber) {
-        smsClients.add(phoneNumber);
-        log.info("New Connection added");
+    public static void addEmailClient(String email) {
+        emailClients.add(email);
+        log.info("New email added");
     }
 
     /**
-     * @param phoneNumber
+     * Method to remove an email client
+     * 
+     * @param email
      */
-    public static void removeSMSClient(String phoneNumber) {
-        smsClients.remove(phoneNumber);
-        log.info("Connection removed");
+    public static void removeEmailClient(String email) {
+        emailClients.remove(email);
+        log.info("Email removed");
     }
 
     /* ------------------------------------------------------------------
      *   CONNECTION HANDLERS
      * ------------------------------------------------------------------*/
-    
+    /**
+     * Method to add a network handler. Add yourself as a network handler if you
+     * want to be notified when a connection is added to the server and when a
+     * message is received by the server
+     * 
+     * @param handler
+     */
     public static void addNetworkHandler(NetworkHandler handler) {
         if(!networkHandlers.contains(handler)) {
             log.info("Adding server connection handler: " + handler.getClass());
@@ -136,6 +179,11 @@ public class Server {
         }
     }
     
+    /**
+     * Method to remove a network handler
+     * 
+     * @param handler
+     */
     public static void removeNetworkHandler(NetworkHandler handler) {
         if(networkHandlers.contains(handler)) {
             log.info("Removing server connection handler: " + handler.getClass());
@@ -144,7 +192,10 @@ public class Server {
     }
     
     /**
-     * Method for receiving a new message
+     * Method for receiving a new message. This method notifies all registered
+     * network handlers when a new message is received by the server
+     * 
+     * @param msg
      */
     public static void messageReceived(StateDeviceMessage msg) {
      // Notify Connection Handlers
@@ -176,37 +227,45 @@ public class Server {
     }
     
     /**
-     * Email function
+     * Method to send an email message to all email clients
+     * 
+     * @param email
      */
     public static void sendEmail(Email email) {
-        if(properties == null) {
-            loadProperties();
-        }
-        final String username = getProperty(EMAIL_USERNAME);
-        final String password = getProperty(EMAIL_TOKEN);
-
-        Session session = Session.getInstance(getProperties(), new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
-
-        try {
-            Message message = new MimeMessage(session);
-            message.setRecipients(Message.RecipientType.TO,
-                InternetAddress.parse("kevin.kanzelmeyer@gmail.com"));
-            message.setSubject(email.getSubject());
+        if(emailClients.size() > 0) {
             
-            // put everything together
-            message.setContent(email.getContent());
+            if(properties == null) {
+                loadProperties();
+            }
+    
+            final String username = getProperty(EMAIL_USERNAME);
+            final String password = getProperty(EMAIL_TOKEN);
+            
+            Session session = Session.getInstance(getProperties(), new javax.mail.Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(username, password);
+                }
+            });
+    
+            // convert clients list into a comma separated string
+            String clients = StringUtils.implode(emailClients, ",");
+            try {
+                log.info("Email on thread " + Thread.currentThread().getId());
+                Message message = new MimeMessage(session);
+                message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(clients));
+                message.setSubject(email.getSubject());
+                
+                // add email content to message
+                message.setContent(email.getContent());
+    
+                Transport.send(message);
+                log.info("Email sent to " + clients);
+            } catch (MessagingException e) {
+                log.error("Email error", e);
+                throw new RuntimeException(e);
+            }
 
-            Transport.send(message);
-
-            System.out.println("Done");
-
-        } catch (MessagingException e) {
-            log.error("Email error", e);
-            throw new RuntimeException(e);
         }
     }
 }
