@@ -1,4 +1,4 @@
-package com.alfred.server.utils;
+package com.alfred.server.email;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.network.NetworkHandler;
-import com.alfred.server.utils.Email;
+import com.alfred.server.email.Email;
 
 /**
  * This class is the abstraction of the Alfred server connections. It maintains

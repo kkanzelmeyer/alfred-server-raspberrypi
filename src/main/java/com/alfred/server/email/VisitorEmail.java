@@ -1,4 +1,4 @@
-package com.alfred.server.utils;
+package com.alfred.server.email;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
