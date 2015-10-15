@@ -1,62 +1,41 @@
 package com.alfred.server.server;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.alfred.common.datamodel.StateDevice;
-import com.alfred.common.datamodel.StateDeviceManager;
-import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
-import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
-import com.alfred.server.plugins.RPDoorbellPluginWebcam;
-import com.alfred.server.plugins.ServerConnectionPlugin;
+import com.alfred.server.utils.Config;
 
 public class ServerApp {
 
-    private static final Logger log = LoggerFactory.getLogger(ServerApp.class);
-
     public static void main(String[] args) {
-        log.info( "\n-----------------------------------------------------------"
-                + "\n             Alfred Home Server"
-                + "\n-----------------------------------------------------------" 
-                + "\n");
-        log.info("Starting Alfred Server");
-
-        // Load configuration properties into server class
-        Server.loadProperties();
-
-        /* -------------------------------------------------------------------
-         *  DEVICES
-         * -------------------------------------------------------------------*/
-        // create new device(s)
-        StateDevice doorbell = new StateDevice.Builder()
-                .setId("doorbell1")
-                .setName("Front Door")
-                .setType(Type.DOORBELL)
-                .setState(State.INACTIVE).build();
-        // Add device(s) to device manager
-        StateDeviceManager.addStateDevice(doorbell);
-
-        /* -------------------------------------------------------------------
-         *  PLUGINS
-         * -------------------------------------------------------------------*/
-        // TODO create plugin manager
-        ServerConnectionPlugin serverConnectionPlugin = 
-                new ServerConnectionPlugin();
-        RPDoorbellPluginWebcam frontDoorPlugin = 
-                new RPDoorbellPluginWebcam(13, doorbell.getId());
-        // Activate plugins
-        serverConnectionPlugin.activate();
-        frontDoorPlugin.activate();
         
         /* -------------------------------------------------------------------
-         *  EMIAL CLIENTS
+         *  DISPLAY STARTUP MESSAGE
          * -------------------------------------------------------------------*/
-        String[] emails = Server.getProperty(Server.EMAIL_CLIENTS).split(",");
-        for(String email : emails) {
-            if(!email.equals("")) {
-                Server.addEmailClient(email);
-            }
-        }
+        Server.printGreeting();
+
+        /* -------------------------------------------------------------------
+         *  LOAD CONFIGURATIONS
+         * -------------------------------------------------------------------*/
+        Server.loadProperties();
+        Config.loadDevices("cfg/devices.json");
+
+//        /* -------------------------------------------------------------------
+//         *  CREATE DEVICES
+//         * -------------------------------------------------------------------*/
+//        // create new device(s)
+//        // TODO move this to server loadproperties method
+//        StateDevice doorbell = new StateDevice.Builder()
+//                .setId("doorbell1")
+//                .setName("Front Door")
+//                .setType(Type.DOORBELL)
+//                .setState(State.INACTIVE)
+//                .build();
+//        // Add device(s) to device manager
+//        StateDeviceManager.addStateDevice(doorbell);
+//
+//        /* -------------------------------------------------------------------
+//         *  ACTIVATE PLUGINS
+//         * -------------------------------------------------------------------*/
+//        new ServerConnectionPlugin().activate();
+//        new RPDoorbellPluginWebcam(13, doorbell.getId()).activate();
 
         /* -------------------------------------------------------------------
          *  START SERVER

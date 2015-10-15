@@ -43,7 +43,8 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  */
 public class RPSwitchDevicePlugin implements DevicePlugin {
 
-    private int pin;
+    private int sensorPin;
+    private int switchPin;
     private String myDeviceId;
     private GpioPinDigitalInput sensor = null;
     private GpioPinDigitalOutput relay = null;
@@ -53,19 +54,32 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
     // Logger
     final private static Logger log = LoggerFactory.getLogger(RPSwitchDevicePlugin.class);
     
+    /**
+     * Constructor - order is sensor pin, button pin, device id
+     * @param sensorPin
+     * @param buttonPin
+     * @param deviceId
+     */
+    public RPSwitchDevicePlugin(int sensorPin, int switchPin, String deviceId) {
+        this.myDeviceId = deviceId;
+        this.sensorPin = sensorPin;
+        this.switchPin = switchPin;
+    }
+    
     @Override
     public void activate() {
         // Raspberry Pi pin provisioning
-        log.info("Adding plugin for pin " + pin);
         try {
             // Create digital listener for sensor
+            log.info("Adding plugin for pin " + sensorPin);
             GpioController gpio = GpioFactory.getInstance();
-            sensor = gpio.provisionDigitalInputPin(PinConverter.ModelB.fromInt(pin), "Sensor",
+            sensor = gpio.provisionDigitalInputPin(PinConverter.ModelB.fromInt(sensorPin), "Sensor",
                     PinPullResistance.PULL_DOWN);
             sensor.addListener(new SwitchSensorHandler());
 
             // create digital output for the relay switch
-            relay = gpio.provisionDigitalOutputPin(PinConverter.ModelB.fromInt(pin),
+            log.info("Adding plugin for pin " + switchPin);
+            relay = gpio.provisionDigitalOutputPin(PinConverter.ModelB.fromInt(switchPin),
                     "Relay",
                     PinState.LOW);
         } catch (Exception e) {

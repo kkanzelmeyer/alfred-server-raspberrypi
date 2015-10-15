@@ -44,7 +44,8 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  */
 public class RPGarageDoorPlugin implements DevicePlugin {
 
-    private int pin;
+    private int sensorPin;
+    private int switchPin;
     private String myDeviceId;
     private GpioPinDigitalInput sensor = null;
     private GpioPinDigitalOutput button = null;
@@ -53,20 +54,33 @@ public class RPGarageDoorPlugin implements DevicePlugin {
 
     // Logger
     final private static Logger log = LoggerFactory.getLogger(RPGarageDoorPlugin.class);
+    
+    /**
+     * Constructor - order is sensor pin, button pin, device id
+     * @param sensorPin
+     * @param buttonPin
+     * @param deviceId
+     */
+    public RPGarageDoorPlugin(int sensorPin, int switchPin, String deviceId) {
+        this.myDeviceId = deviceId;
+        this.sensorPin = sensorPin;
+        this.switchPin = switchPin;
+    }
 
     @Override
     public void activate() {
         // Raspberry Pi pin provisioning
-        log.info("Adding plugin for pin " + pin);
         try {
             // Create digital listener for garage door sensor
+            log.info("Adding plugin for pin " + sensorPin);
             GpioController gpio = GpioFactory.getInstance();
-            sensor = gpio.provisionDigitalInputPin(PinConverter.ModelB.fromInt(pin), "Sensor",
+            sensor = gpio.provisionDigitalInputPin(PinConverter.ModelB.fromInt(sensorPin), "Sensor",
                     PinPullResistance.PULL_DOWN);
             sensor.addListener(new GarageDoorSensorHandler());
 
             // create digital output for garage door button
-            button = gpio.provisionDigitalOutputPin(PinConverter.ModelB.fromInt(pin),
+            log.info("Adding plugin for pin " + switchPin);
+            button = gpio.provisionDigitalOutputPin(PinConverter.ModelB.fromInt(switchPin),
                     "Button",
                     PinState.LOW);
         } catch (Exception e) {

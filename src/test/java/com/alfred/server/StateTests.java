@@ -2,7 +2,6 @@ package com.alfred.server;
 
 import static org.junit.Assert.assertEquals;
 
-import org.bridj.util.StringUtils;
 import org.junit.Test;
 
 import com.alfred.common.datamodel.StateDevice;
@@ -10,7 +9,7 @@ import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
 import com.alfred.server.server.Server;
-import com.alfred.server.utils.VisitorEmail;
+import com.alfred.server.utils.Config;
 
 /**
  * Unit test for server app
@@ -47,28 +46,19 @@ public class StateTests{
      */
 //    @Test
 //    public void sendEmail() {
-//        String email1 = "kanzelm4@gmail.com";
-//        Server.addEmailClient(email1);
 //        Server.loadProperties();
 //        VisitorEmail email = new VisitorEmail();
 //        email.setDate(String.valueOf(System.currentTimeMillis()));
 //        email.setSubject("Visitor at the Front Door");
 //        email.setImagePath("/home/kevin/Downloads/visitor1444667076.jpg");
-//        email.build();
 //        Server.sendEmail(email);
 //    }
 
-    @Test
-    public void syntaxTest() {
-        String email1 = "kanzelm4@gmail.com";
-        String email2 = "kevin.kanzelmeyer@gmail.com";
-        Server.addEmailClient(email1);
-        Server.addEmailClient(email2);
-        String clients = StringUtils.implode(Server.getEmailClients(), ",");
-        System.out.println(clients);
-        assertEquals(email1 + "," + email2, clients);
-    }
-    
+//    @Test
+//    public void loadDevicesTest() {
+//        Config.loadDevices("cfg/devices.json");
+//    }
+//    
     /**
      * Properties test
      */

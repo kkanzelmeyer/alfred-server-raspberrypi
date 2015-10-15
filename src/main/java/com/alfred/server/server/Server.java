@@ -62,6 +62,17 @@ public class Server {
             try {
                 InputStream input = new FileInputStream("cfg/config.properties");
                 properties.load(input);
+                
+                // email clients
+                String[] emails = getProperty(Server.EMAIL_CLIENTS).split(",");
+                for(String email : emails) {
+                    if(!email.equals("")) {
+                        addEmailClient(email);
+                    }
+                }
+                
+                // TODO devices
+                
             } catch(IOException e) {
                 e.printStackTrace();
             }
@@ -204,7 +215,10 @@ public class Server {
             handler.onMessageReceived(msg);
         }
     }
-    
+
+    /* ------------------------------------------------------------------
+     *   HELPER METHODS
+     * ------------------------------------------------------------------*/
     /**
      * Helper method to send a state update message to all connected clients
      * 
@@ -225,7 +239,7 @@ public class Server {
             }
         }
     }
-    
+
     /**
      * Method to send an email message to all email clients
      * 
@@ -240,13 +254,13 @@ public class Server {
     
             final String username = getProperty(EMAIL_USERNAME);
             final String password = getProperty(EMAIL_TOKEN);
-            
+
             Session session = Session.getInstance(getProperties(), new javax.mail.Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(username, password);
                 }
             });
-    
+
             // convert clients list into a comma separated string
             String clients = StringUtils.implode(emailClients, ",");
             try {
@@ -259,15 +273,22 @@ public class Server {
                 // add email content to message
                 message.setContent(email.getContent());
     
+                // send email
                 Transport.send(message);
                 log.info("Email sent to " + clients);
             } catch (MessagingException e) {
                 log.error("Email error", e);
                 throw new RuntimeException(e);
             }
-
         }
     }
+    
+    public static void printGreeting() {
+        log.info( "\n-----------------------------------------------------------"
+                + "\n             Alfred Home Server"
+                + "\n-----------------------------------------------------------" 
+                + "\n");
+        log.info("Starting Alfred Server");
+    }
+    
 }
-
-
