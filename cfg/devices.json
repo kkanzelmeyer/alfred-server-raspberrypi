@@ -1,0 +1,19 @@
+[ {
+    "statedevice" : {
+        "id" : "doorbell1",
+        "name" : "Front Door",
+        "type" : "doorbell",
+        "state" : "inactive"
+    },
+    "sensorpin" : 13,
+    "hasWebcam" : true
+}, {
+    "statedevice" : {
+        "id" : "garagedoor1",
+        "name" : "Main Garage Door",
+        "type" : "garagedoor",
+        "state" : "closed"
+    },
+    "sensorpin" : 14,
+    "switchpin" : 15
+} ]

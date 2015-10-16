@@ -13,56 +13,43 @@ import org.slf4j.LoggerFactory;
 
 import com.alfred.common.datamodel.StateDevice;
 import com.alfred.common.datamodel.StateDeviceManager;
-import com.alfred.server.plugins.RPDoorbellPlugin;
-import com.alfred.server.plugins.RPDoorbellPluginWebcam;
-import com.alfred.server.plugins.RPGarageDoorPlugin;
-import com.alfred.server.plugins.RPSwitchDevicePlugin;
+import com.alfred.server.plugins.DevicePlugin;
+import com.alfred.server.plugins.PluginFactory;
 
 public class Config {
     
     private static final Logger log = LoggerFactory.getLogger(Config.class);
 
+    /**
+     * This static method creates the devices and plugins for Alfred to manage.
+     * The devices are expected in JSON format as an array of devices. An
+     * example can be found in the cfg directory at the root of the project
+     * 
+     * @param path
+     */
     public static void loadDevices(String path) {
         JSONArray deviceArray = parseDeviceFile(path);
         for(int i = 0; i < deviceArray.length(); i++) {
             JSONObject obj = deviceArray.getJSONObject(i);
-            log.info("\nJSON Object:" + obj.toString());
                         
             // create a state device from the json object
             JSONObject jsonStateDevice = obj.getJSONObject("statedevice");
-            log.info("\nJSON Object:" + jsonStateDevice.toString());
+            log.info("\nJSON Creating State Device from JSON:" 
+                     + jsonStateDevice.toString());
             StateDevice device = null;
             try {
                 device = new StateDevice(jsonStateDevice);
             } catch (Exception e) {
                 log.error("Couldn't create state device from json object", e);
             }
-            log.info("\nDevice:" + device.toString());
-            
-            // Create and activate plugins
-            if(device != null) {
-                int sensorPin = obj.has("sensorpin") ? obj.getInt("sensorpin") : 0;
-                int switchPin = obj.has("switchpin") ? obj.getInt("switchpin") : 0;
-                String deviceId = device.getId();
-                switch(device.getType()) {
-                    case DOORBELL : 
-                        if(obj.has("hasWebcam") && obj.getBoolean("hasWebcam")) {
-                            new RPDoorbellPluginWebcam(sensorPin, deviceId).activate();
-                        } else {
-                            new RPDoorbellPlugin(sensorPin, deviceId).activate();
-                        }
-                        break;
-                    case GARAGEDOOR :
-                        new RPGarageDoorPlugin(sensorPin, switchPin, deviceId).activate();
-                        break;
-                    default : 
-                        new RPSwitchDevicePlugin(sensorPin, switchPin, deviceId).activate();
-                        break;
-                }
-            }
             
             // add device to the state device manager
             StateDeviceManager.addStateDevice(device);
+            
+            // Create and activate plugins
+            log.info("Creating plugin for device " + device.getId());
+            DevicePlugin plugin = PluginFactory.getPlugin(obj);
+            plugin.activate();
         }
     }
     

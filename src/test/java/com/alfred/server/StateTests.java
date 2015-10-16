@@ -9,7 +9,6 @@ import com.alfred.common.datamodel.StateDeviceManager;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.State;
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
 import com.alfred.server.server.Server;
-import com.alfred.server.utils.Config;
 
 /**
  * Unit test for server app
@@ -64,7 +63,7 @@ public class StateTests{
      */
     @Test
     public void propertiesTest() {
-        Server.loadProperties();
+        Server.loadProperties("cfg/config.properties");
         String[] emails = Server.getProperty(Server.EMAIL_CLIENTS).split(",");
         for(String email : emails) {
             System.out.println(email);

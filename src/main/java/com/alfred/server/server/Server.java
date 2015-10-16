@@ -49,18 +49,20 @@ public class Server {
     public static final String HOST_PORT      = "alfred.hostport";
     public static final String IMAGE_PATH     = "alfred.imagepath";
     public static final String EMAIL_CLIENTS  = "alfred.emailclients";
-    
+
     /**
      * Method to load properties from the configuration file. Your configuration
      * file should be in {project root}/cfg as notated below. The configuration
      * property keys should match the string values in the above server
-     * constants
+     * constants. An example and notes can be found in the cfg directory
+     * 
+     * @param path
      */
-    public static void loadProperties() {
+    public static void loadProperties(String path) {
         if(properties == null) {
             properties = new Properties();
             try {
-                InputStream input = new FileInputStream("cfg/config.properties");
+                InputStream input = new FileInputStream(path);
                 properties.load(input);
                 
                 // email clients
@@ -70,9 +72,6 @@ public class Server {
                         addEmailClient(email);
                     }
                 }
-                
-                // TODO devices
-                
             } catch(IOException e) {
                 e.printStackTrace();
             }
@@ -247,10 +246,6 @@ public class Server {
      */
     public static void sendEmail(Email email) {
         if(emailClients.size() > 0) {
-            
-            if(properties == null) {
-                loadProperties();
-            }
     
             final String username = getProperty(EMAIL_USERNAME);
             final String password = getProperty(EMAIL_TOKEN);
@@ -283,6 +278,9 @@ public class Server {
         }
     }
     
+    /**
+     * Simple method to print a greeting at the startup of the server
+     */
     public static void printGreeting() {
         log.info( "\n-----------------------------------------------------------"
                 + "\n             Alfred Home Server"

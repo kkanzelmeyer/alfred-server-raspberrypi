@@ -14,7 +14,7 @@ public class ServerApp {
         /* -------------------------------------------------------------------
          *  LOAD CONFIGURATIONS
          * -------------------------------------------------------------------*/
-        Server.loadProperties();
+        Server.loadProperties("cfg/config.properties");
         Config.loadDevices("cfg/devices.json");
 
 //        /* -------------------------------------------------------------------
