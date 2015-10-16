@@ -1,6 +1,6 @@
 configExample.properties contains property fields used by Alfred. The fields  prefixed by "alfred" are fields that you may change based on your Pi's set up. Below are explanations of the fields:
 
-*alfred.hostaddress* -> your Pi's IP Address
+**alfred.hostaddress** -> your Pi's IP Address
 *alfred.hostport* -> the port for network traffic
 *alfred.imagepath* -> the path to the directory where the webcam images are stored if you have a webcam
 *alfred.emailclients* -> comma separated email addresses that will receive email notifications
