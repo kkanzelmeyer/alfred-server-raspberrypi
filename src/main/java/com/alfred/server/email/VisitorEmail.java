@@ -8,6 +8,16 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+
+/**
+ * Visitor Email
+ * 
+ * This is the template for the email that is sent when a visitor is detected
+ * by a doorbell device
+ * 
+ * @author kevin
+ *
+ */
 public class VisitorEmail extends Email {
 
     @Override

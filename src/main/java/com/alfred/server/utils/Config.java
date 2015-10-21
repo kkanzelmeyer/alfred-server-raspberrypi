@@ -25,7 +25,7 @@ public class Config {
      * The devices are expected in JSON format as an array of devices. An
      * example can be found in the cfg directory at the root of the project
      * 
-     * @param path
+     * @param path The path to the json configuration file
      */
     public static void loadDevices(String path) {
         JSONArray deviceArray = parseDeviceFile(path);
@@ -54,8 +54,10 @@ public class Config {
     }
     
     /**
-     * Utility to parse the JSON device file and convert it to a JSON Array
-     * @return
+     * Utility to parse the JSON device file and convert it to a JSON array
+     * 
+     * @param path The path to the file containing the JSON array
+     * @return A JSON array instance of the content contained in the input path file
      */
     private static JSONArray parseDeviceFile(String path) {
         JSONArray devices = null;

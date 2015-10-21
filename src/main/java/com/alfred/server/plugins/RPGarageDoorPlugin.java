@@ -56,10 +56,16 @@ public class RPGarageDoorPlugin implements DevicePlugin {
     final private static Logger log = LoggerFactory.getLogger(RPGarageDoorPlugin.class);
     
     /**
-     * Constructor - order is sensor pin, button pin, device id
+     * Constructor - order is sensor pin, switchPin pin, device id
+     * 
      * @param sensorPin
-     * @param buttonPin
+     *            the pin number on the Raspberry pi on which the device's
+     *            sensor is connected
+     * @param switchPin
+     *            the pin number on the Raspberry pi on which the device's
+     *            switch (button, transistor, relay, etc) is connected
      * @param deviceId
+     *            the id of the device associate with this plugin instance
      */
     public RPGarageDoorPlugin(int sensorPin, int switchPin, String deviceId) {
         this.myDeviceId = deviceId;

@@ -38,12 +38,13 @@ public class WebCameraThread implements Runnable {
      * the specified directory
      */
     public void takePicture() {
-        // Custom resolution
+           // Custom resolution
            Dimension[] myResolution = 
                    new Dimension[] { 
                        new Dimension(640, 360), 
                        new Dimension(1280, 720) 
                    };
+           // TODO make webcam device a SAP
            Webcam webcam = Webcam.getDefault();
            webcam.setCustomViewSizes(myResolution);
            webcam.setViewSize(myResolution[0]);

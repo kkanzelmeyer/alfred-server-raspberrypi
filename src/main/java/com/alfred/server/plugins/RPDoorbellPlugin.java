@@ -202,8 +202,8 @@ public class RPDoorbellPlugin implements DevicePlugin {
         /**
          * This helper method schedules the reset doorbell task
          * 
-         * @param minutes
-         * @param device
+         * @param minutes delay in minutes for the reset timer
+         * @param device reference to the state device
          */
         public void startResetTimer(int minutes, StateDevice device) {
             resetTask = new DoorbellResetTask(device);

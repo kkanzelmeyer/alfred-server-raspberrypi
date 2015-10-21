@@ -25,8 +25,9 @@ import com.alfred.common.network.NetworkHandler;
 import com.alfred.server.email.Email;
 
 /**
- * This class is the abstraction of the Alfred server connections. It maintains
- * a list of client connections and a list of connection handlers
+ * This class is the abstraction of the Alfred server. It maintains the client
+ * connections, the connection handlers, the properties, and the network
+ * handlers
  * 
  * @author Kevin Kanzelmeyer
  *
@@ -56,7 +57,7 @@ public class Server {
      * property keys should match the string values in the above server
      * constants. An example and notes can be found in the cfg directory
      * 
-     * @param path
+     * @param path The path to the configuration file
      */
     public static void loadProperties(String path) {
         if(properties == null) {
@@ -77,10 +78,11 @@ public class Server {
             }
         }
     }
-    
+
     /**
      * Method to return the properties object
-     * @return
+     * 
+     * @return A reference to the properties object created from the config file
      */
     public static Properties getProperties() {
         return properties;
@@ -90,8 +92,8 @@ public class Server {
      * Method to get the property value of a given key. Note that the keys can
      * be easily captured using the above server constants
      * 
-     * @param key
-     * @return
+     * @param key The key of the property
+     * @return The property value of the given key
      */
     public static String getProperty(String key) {
         if(properties.containsKey(key)) {
@@ -103,6 +105,11 @@ public class Server {
     /* ------------------------------------------------------------------
      *   CONNECTIONS
      * ------------------------------------------------------------------*/
+   /**
+    *  Method to fetch all client connections registered with the server
+    *  
+    * @return A List of the connections registered with the server
+    */
     public static List<Socket> getServerConnections() {
         return serverConnections;
     }
@@ -110,7 +117,7 @@ public class Server {
     /**
      * Method to add a server connection
      * 
-     * @param connection
+     * @param connection A reference to the socket connection
      */
     public static void addServerConnection(Socket connection) {
         serverConnections.add(connection);
@@ -122,9 +129,9 @@ public class Server {
     }
 
     /**
-     * Method to remove a server connection
+     * Method to remove a specific server connection
      * 
-     * @param connection
+     * @param connection A reference to the socket connection
      */
     public static void removeServerConnection(Socket connection) {
         serverConnections.remove(connection);
@@ -134,7 +141,7 @@ public class Server {
     /**
      * Method to count the number of active server socket connections
      * 
-     * @return
+     * @return The number of connections registered with the server
      */
     public static int getConnectionCount() {
         return serverConnections.size();
@@ -146,7 +153,7 @@ public class Server {
     /**
      * Method to fetch all email clients
      * 
-     * @return
+     * @return A List of email clients
      */
     public static List<String> getEmailClients() {
         return emailClients;
@@ -155,7 +162,7 @@ public class Server {
     /**
      * Method to add an email client
      * 
-     * @param email
+     * @param email A valid email address
      */
     public static void addEmailClient(String email) {
         emailClients.add(email);
@@ -165,11 +172,15 @@ public class Server {
     /**
      * Method to remove an email client
      * 
-     * @param email
+     * @param email A valid email address
      */
     public static void removeEmailClient(String email) {
-        emailClients.remove(email);
-        log.info("Email removed");
+        if(emailClients.contains(email)) {
+            emailClients.remove(email);
+            log.info("Email removed");
+        } else {
+            log.error("Remove email failed - email not found");
+        }
     }
 
     /* ------------------------------------------------------------------
@@ -180,7 +191,7 @@ public class Server {
      * want to be notified when a connection is added to the server and when a
      * message is received by the server
      * 
-     * @param handler
+     * @param handler a reference to the Network Handler
      */
     public static void addNetworkHandler(NetworkHandler handler) {
         if(!networkHandlers.contains(handler)) {
@@ -192,7 +203,7 @@ public class Server {
     /**
      * Method to remove a network handler
      * 
-     * @param handler
+     * @param handler A reference to the Network Handler
      */
     public static void removeNetworkHandler(NetworkHandler handler) {
         if(networkHandlers.contains(handler)) {
@@ -205,7 +216,8 @@ public class Server {
      * Method for receiving a new message. This method notifies all registered
      * network handlers when a new message is received by the server
      * 
-     * @param msg
+     * @param msg A reference to a StateDeviceMessage
+     * @see https://github.com/kkanzelmeyer/alfred-common/
      */
     public static void messageReceived(StateDeviceMessage msg) {
      // Notify Connection Handlers
@@ -221,7 +233,8 @@ public class Server {
     /**
      * Helper method to send a state update message to all connected clients
      * 
-     * @param device
+     * @param A reference to a StateDevice
+     * @see https://github.com/kkanzelmeyer/alfred-common/ 
      */
     public static void sendMessage(StateDeviceMessage msg) {
 
@@ -242,7 +255,7 @@ public class Server {
     /**
      * Method to send an email message to all email clients
      * 
-     * @param email
+     * @param email A reference to a valid email object
      */
     public static void sendEmail(Email email) {
         if(emailClients.size() > 0) {

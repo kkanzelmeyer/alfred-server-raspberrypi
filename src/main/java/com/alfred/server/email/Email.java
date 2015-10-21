@@ -14,10 +14,15 @@ public abstract class Email {
     public String getSubject() {
         return subject;
     }
+    
     public void setSubject(String subject) {
         this.subject = subject;
     }
     
+    /**
+     * Method to create a pretty date 
+     * @return A string with a nice display date
+     */
     public String getDisplayDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(Long.valueOf(date));
@@ -29,9 +34,11 @@ public abstract class Email {
     public void setDate(String date) {
         this.date = date;
     }
+    
     public String getImagePath() {
         return imagePath;
     }
+    
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
@@ -39,6 +46,8 @@ public abstract class Email {
     /**
      * This method should be used by child classes to create
      * the message content
+     * 
+     * @return The content of the email message
      */
     public abstract MimeMultipart getContent();
 }

@@ -8,8 +8,9 @@ public class PluginFactory {
     
     /**
      * A static method for returning a plugin for a given JSON object
-     * @param obj
-     * @return
+     * 
+     * @param obj JSON Object representation of a valid state device
+     * @return plugin the appropriate plugin for the given device
      */
     public static DevicePlugin getPlugin(JSONObject obj) {
         DevicePlugin plugin = null;
