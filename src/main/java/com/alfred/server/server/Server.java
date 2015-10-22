@@ -57,7 +57,7 @@ public class Server {
      * property keys should match the string values in the above server
      * constants. An example and notes can be found in the cfg directory
      * 
-     * @param path The path to the configuration file
+     * @param path the path to the configuration file
      */
     public static void loadProperties(String path) {
         if(properties == null) {
@@ -217,7 +217,6 @@ public class Server {
      * network handlers when a new message is received by the server
      * 
      * @param msg A reference to a StateDeviceMessage
-     * @see https://github.com/kkanzelmeyer/alfred-common/
      */
     public static void messageReceived(StateDeviceMessage msg) {
      // Notify Connection Handlers
@@ -233,8 +232,7 @@ public class Server {
     /**
      * Helper method to send a state update message to all connected clients
      * 
-     * @param A reference to a StateDevice
-     * @see https://github.com/kkanzelmeyer/alfred-common/ 
+     * @param msg A reference to a StateDevice
      */
     public static void sendMessage(StateDeviceMessage msg) {
 
