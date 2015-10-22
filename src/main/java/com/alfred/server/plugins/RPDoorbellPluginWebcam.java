@@ -25,6 +25,7 @@ import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
 import com.alfred.common.network.NetworkHandler;
 import com.alfred.server.email.VisitorEmail;
 import com.alfred.server.server.Server;
+import com.alfred.server.utils.Config;
 import com.alfred.server.utils.PinConverter;
 import com.google.protobuf.ByteString;
 import com.pi4j.io.gpio.GpioController;
@@ -37,15 +38,15 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 
 /**
- * Raspberry Pi Doorbell Plugin with Webcam option
- * 
+ * <b>Raspberry Pi Doorbell Plugin with Webcam option. </b>
+ * <p>
  * This class handles the server behavior for a doorbell device. The general
  * behavior is that the sensor near the door (button, motion, etc) can set the
  * device state to "active". When the device is set to active it requests a
  * picture from the connected webcam and sends a message to all connected
  * clients. It will also start a reset timer that resets the device in
  * "inactive" after two minutes.
- * 
+ * <p>
  * The plugin has three primary components:
  * 
  * <ul>
@@ -59,7 +60,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  * the state accordingly</li>
  * </ul>
  * 
- * @author kevin
+ * @author Kevin Kanzelmeyer
  *
  */
 public class RPDoorbellPluginWebcam implements DevicePlugin {
@@ -72,14 +73,21 @@ public class RPDoorbellPluginWebcam implements DevicePlugin {
     
     final private static Logger log = LoggerFactory.getLogger(RPDoorbellPluginWebcam.class);
     
+    /**
+     * Constructor order is pin, deviceId.
+     * 
+     * @param pin
+     *            The pin on the Raspberry Pi to which the sensor device is
+     *            connected
+     * @param deviceId
+     *            The ID of the device that is associated with this plugin
+     *            instance
+     */
     public RPDoorbellPluginWebcam(int pin, String deviceId) {
         this.pin = pin;
         this.myDeviceId = deviceId;
     }
 
-    /**
-     * Call this method to activate the plugin
-     */
     @Override
     public void activate() {
         // Raspberry pi handler
@@ -120,10 +128,11 @@ public class RPDoorbellPluginWebcam implements DevicePlugin {
 
     /**
      * This class handles input changes from the Raspberry Pi GPIO pins
-     * @author kevin
+     * 
+     * @author Kevin Kanzelmeyer
      *
      */
-    private class DoorbellSensorHandler implements GpioPinListenerDigital {
+    public class DoorbellSensorHandler implements GpioPinListenerDigital {
         
         @Override
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
@@ -173,6 +182,7 @@ public class RPDoorbellPluginWebcam implements DevicePlugin {
          */
         @Override
         public void onUpdateDevice(StateDevice device) {
+            
             // filter message based on this plugin's device id
             if(device.getId().equals(myDeviceId)) {
                 // Start building message
@@ -242,7 +252,7 @@ public class RPDoorbellPluginWebcam implements DevicePlugin {
          * @author Kevin Kanzelmeyer
          *
          */
-        private class TakePictureCallback implements WebCamCallback {
+        public class TakePictureCallback implements WebCamCallback {
 
             /**
              * This method adds the image to the message that was started in the
@@ -268,7 +278,7 @@ public class RPDoorbellPluginWebcam implements DevicePlugin {
 
                 // Save the image to a file
                 log.info("Saving image file on server");
-                String filepath = Server.getProperty(Server.IMAGE_PATH);
+                String filepath = Server.getProperty(Config.IMAGE_PATH);
                 String date = String.valueOf(System.currentTimeMillis());
                 String filename = "visitor" + date + ".jpg";
                 try {
@@ -299,13 +309,13 @@ public class RPDoorbellPluginWebcam implements DevicePlugin {
          * @author Kevin Kanzelmeyer
          *
          */
-        private class DoorbellResetTask extends TimerTask {
+        public class DoorbellResetTask extends TimerTask {
 
             private StateDevice device = null;
 
             /**
              * Method to add a state device for the reset task
-             * @param stateDevice
+             * @param stateDevice A reference to a State Device
              */
             public void addDevice(StateDevice stateDevice) {
                 device = stateDevice;
@@ -313,13 +323,11 @@ public class RPDoorbellPluginWebcam implements DevicePlugin {
 
             /**
              * Method to check if a device has been set
-             * @return
+             * 
+             * @return True if the timer task has an associate device. False otherwise
              */
             public boolean hasDevice() {
-                if (device != null)
-                    return true;
-                else
-                    return false;
+                return (device != null);
             }
 
             /**
@@ -337,10 +345,10 @@ public class RPDoorbellPluginWebcam implements DevicePlugin {
      * The doorbell network handler is responsible for updating the state device
      * manager with the new state received from the message
      * 
-     * @author kanzelmeyer
+     * @author Kevin Kanzelmeyer
      *
      */
-    private class DoorbellNetworkHandler implements NetworkHandler {
+    public class DoorbellNetworkHandler implements NetworkHandler {
 
         @Override
         public void onConnect(Socket connection) { }

@@ -5,6 +5,13 @@ import java.util.Calendar;
 
 import javax.mail.internet.MimeMultipart;
 
+/**
+ * Email parent class. This parent class contains the common email properties
+ * and methods. Subclasses only need to define the getContent method.
+ * 
+ * @author Kevin Kanzelmeyer
+ *
+ */
 public abstract class Email {
     
     private String subject;
@@ -44,8 +51,8 @@ public abstract class Email {
     }
     
     /**
-     * This method should be used by child classes to create
-     * the message content
+     * This method should be used by child classes to create the email message
+     * content
      * 
      * @return The content of the email message
      */

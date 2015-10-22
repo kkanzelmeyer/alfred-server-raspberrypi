@@ -4,6 +4,12 @@ import org.json.JSONObject;
 
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage.Type;
 
+/**
+ * A simple factory class with a method to find a plugin
+ * 
+ * @author Kevin Kanzelmeyer
+ *
+ */
 public class PluginFactory {
     
     /**
@@ -13,7 +19,9 @@ public class PluginFactory {
      * @return plugin the appropriate plugin for the given device
      */
     public static DevicePlugin getPlugin(JSONObject obj) {
+        
         DevicePlugin plugin = null;
+        
         // get relevant info from the json object
         int sensorPin = obj.has("sensorpin") ? obj.getInt("sensorpin") : 0;
         int switchPin = obj.has("switchpin") ? obj.getInt("switchpin") : 0;

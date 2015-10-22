@@ -39,7 +39,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  * clients when the state changes</li>
  * </ul>
  * 
- * @author kanzelmeyer
+ * @author Kevin Kanzelmeyer
  *
  */
 public class RPGarageDoorPlugin implements DevicePlugin {
@@ -114,10 +114,10 @@ public class RPGarageDoorPlugin implements DevicePlugin {
      * handler only needs to be responsible for updating the state based on the
      * reading of the sensor
      * 
-     * @author kkanzelmeyer
+     * @author Kevin Kanzelmeyer
      *
      */
-    private class GarageDoorSensorHandler implements GpioPinListenerDigital {
+    public class GarageDoorSensorHandler implements GpioPinListenerDigital {
 
         @Override
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
@@ -135,14 +135,13 @@ public class RPGarageDoorPlugin implements DevicePlugin {
     }
 
     /**
-     * State handler for a garage door device. The state handler only needs
-     * to be responsible for sending a message to clients when the state is
-     * updated
+     * State handler for a garage door device. The state handler only needs to
+     * be responsible for sending a message to clients when the state is updated
      * 
-     * @author kanzelmeyer
+     * @author Kevin Kanzelmeyer
      *
      */
-    private class GarageDoorStateHandler implements StateDeviceHandler {
+    public class GarageDoorStateHandler implements StateDeviceHandler {
 
         @Override
         public void onAddDevice(StateDevice device) {
@@ -175,10 +174,10 @@ public class RPGarageDoorPlugin implements DevicePlugin {
      * responsible for opening and closing the garage door based on an incoming
      * message
      * 
-     * @author kanzelmeyer
+     * @author Kevin Kanzelmeyer
      *
      */
-    private class GarageDoorNetworkHandler implements NetworkHandler {
+    public class GarageDoorNetworkHandler implements NetworkHandler {
 
         @Override
         public void onConnect(Socket connection) {}

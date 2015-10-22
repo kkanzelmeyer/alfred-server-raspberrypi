@@ -29,16 +29,16 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 /**
  * Raspberry Pi Doorbell Plugin (no Webcam)
- * 
- * <i>If you would like to use a webcam please use the
+ * <p>
+ * <i>If you would like to use a webcam with the doorbell device please use the
  * RPDoorbellWebcamPlugin</i>
- * 
+ * <p>
  * This class handles the server behavior for a doorbell device. The general
  * behavior is that the sensor near the door (button, motion, etc) can set the
  * device state to "active". When the device is set to active it sends a message
  * to all connected clients. It will also start a reset timer that resets the
  * device in "inactive" after two minutes.
- * 
+ * <p>
  * The plugin has three primary components:
  * 
  * <ul>
@@ -52,7 +52,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  * the state accordingly</li>
  * </ul>
  * 
- * @author kevin
+ * @author Kevin Kanzelmeyer
  *
  */
 public class RPDoorbellPlugin implements DevicePlugin {
@@ -65,14 +65,21 @@ public class RPDoorbellPlugin implements DevicePlugin {
     
     final private static Logger log = LoggerFactory.getLogger(RPDoorbellPlugin.class);
     
+    /**
+     * Constructor order is pin, deviceId.
+     * 
+     * @param pin
+     *            The pin on the Raspberry Pi to which the sensor device is
+     *            connected
+     * @param deviceId
+     *            The ID of the device that is associated with this plugin
+     *            instance
+     */
     public RPDoorbellPlugin(int pin, String deviceId) {
         this.pin = pin;
         this.myDeviceId = deviceId;
     }
 
-    /**
-     * Call this method to activate the plugin
-     */
     @Override
     public void activate() {
         // Raspberry pi handler
@@ -117,7 +124,7 @@ public class RPDoorbellPlugin implements DevicePlugin {
      * @author kevin
      *
      */
-    private class DoorbellSensorHandler implements GpioPinListenerDigital {
+    public class DoorbellSensorHandler implements GpioPinListenerDigital {
         
         @Override
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
@@ -225,13 +232,13 @@ public class RPDoorbellPlugin implements DevicePlugin {
          * @author Kevin Kanzelmeyer
          *
          */
-        private class DoorbellResetTask extends TimerTask {
+        public class DoorbellResetTask extends TimerTask {
 
             private StateDevice device = null;
 
             /**
              * Method to add a state device for the reset task
-             * @param stateDevice
+             * @param stateDevice A valid StateDevice that will be updated by the reset task
              */
             public DoorbellResetTask(StateDevice stateDevice) {
                 device = stateDevice;
@@ -239,7 +246,8 @@ public class RPDoorbellPlugin implements DevicePlugin {
 
             /**
              * Method to check if a device has been set
-             * @return
+             * 
+             * @return True if the device has been set, false otherwise
              */
             public boolean hasDevice() {
                 return (device != null);
@@ -260,10 +268,10 @@ public class RPDoorbellPlugin implements DevicePlugin {
      * Network handler for the doorbell device. This handler's responsibility is to
      * update the state device manager with the new state received in a message
      * 
-     * @author kanzelmeyer
+     * @author Kevin Kanzelmeyer
      *
      */
-    private class DoorbellNetworkHandler implements NetworkHandler {
+    public class DoorbellNetworkHandler implements NetworkHandler {
 
         @Override
         public void onConnect(Socket connection) { }

@@ -1,8 +1,5 @@
 package com.alfred.server.server;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,18 +13,18 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.bridj.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 import com.alfred.common.network.NetworkHandler;
 import com.alfred.server.email.Email;
+import com.alfred.server.utils.Config;
 
 /**
- * This class is the abstraction of the Alfred server. It maintains the client
- * connections, the connection handlers, the properties, and the network
- * handlers
+ * This class is the backbone of the Alfred server. It maintains the client
+ * connections, connection handlers, properties, and network
+ * handlers. 
  * 
  * @author Kevin Kanzelmeyer
  *
@@ -43,40 +40,11 @@ public class Server {
     /* ------------------------------------------------------------------
      *   PROPERTIES
      * ------------------------------------------------------------------*/
-    // convenient constants for getting property keys
-    public static final String EMAIL_USERNAME = "mail.username";
-    public static final String EMAIL_TOKEN    = "mail.token";
-    public static final String HOST_ADDRESS   = "alfred.hostaddress";
-    public static final String HOST_PORT      = "alfred.hostport";
-    public static final String IMAGE_PATH     = "alfred.imagepath";
-    public static final String EMAIL_CLIENTS  = "alfred.emailclients";
 
-    /**
-     * Method to load properties from the configuration file. Your configuration
-     * file should be in {project root}/cfg as notated below. The configuration
-     * property keys should match the string values in the above server
-     * constants. An example and notes can be found in the cfg directory
-     * 
-     * @param path the path to the configuration file
-     */
-    public static void loadProperties(String path) {
-        if(properties == null) {
-            properties = new Properties();
-            try {
-                InputStream input = new FileInputStream(path);
-                properties.load(input);
-                
-                // email clients
-                String[] emails = getProperty(Server.EMAIL_CLIENTS).split(",");
-                for(String email : emails) {
-                    if(!email.equals("")) {
-                        addEmailClient(email);
-                    }
-                }
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-        }
+
+    
+    public static void loadProperties(Properties props) {
+        properties = props;
     }
 
     /**
@@ -115,7 +83,9 @@ public class Server {
     }
 
     /**
-     * Method to add a server connection
+     * Method to add a server connection. Note this method will notify all 
+     * registered NetworkHandlers that a new connection has been added
+     * and provide a reference to the connection
      * 
      * @param connection A reference to the socket connection
      */
@@ -214,9 +184,13 @@ public class Server {
     
     /**
      * Method for receiving a new message. This method notifies all registered
-     * network handlers when a new message is received by the server
+     * NetworkHandlers when a new message is received by the server by calling
+     * the "onMessageReceived" method. It is the handler's responsibility to
+     * determine if the message is relevant to it's functionality (ie. use the
+     * getId() or getType() method to determine if the message is relevant)
      * 
-     * @param msg A reference to a StateDeviceMessage
+     * @param msg
+     *            A reference to a StateDeviceMessage
      */
     public static void messageReceived(StateDeviceMessage msg) {
      // Notify Connection Handlers
@@ -230,7 +204,7 @@ public class Server {
      *   HELPER METHODS
      * ------------------------------------------------------------------*/
     /**
-     * Helper method to send a state update message to all connected clients
+     * Method to send a state update message to all connected clients.
      * 
      * @param msg A reference to a StateDevice
      */
@@ -251,15 +225,18 @@ public class Server {
     }
 
     /**
-     * Method to send an email message to all email clients
+     * Method to send an email message to all email clients. The email clients
+     * should be added automatically from the properties file. The default file
+     * location of the properties file is [projectRoot]/cfg/config.properties
      * 
-     * @param email A reference to a valid email object
+     * @param email
+     *            A reference to a valid email object
      */
     public static void sendEmail(Email email) {
         if(emailClients.size() > 0) {
-    
-            final String username = getProperty(EMAIL_USERNAME);
-            final String password = getProperty(EMAIL_TOKEN);
+
+            final String username = getProperty(Config.EMAIL_USERNAME);
+            final String password = getProperty(Config.EMAIL_TOKEN);
 
             Session session = Session.getInstance(getProperties(), new javax.mail.Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
@@ -268,17 +245,18 @@ public class Server {
             });
 
             // convert clients list into a comma separated string
-            String clients = StringUtils.implode(emailClients, ",");
+            String clients = String.join(",", emailClients);
+            
             try {
                 log.info("Email on thread " + Thread.currentThread().getId());
                 Message message = new MimeMessage(session);
                 message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(clients));
                 message.setSubject(email.getSubject());
-                
+
                 // add email content to message
                 message.setContent(email.getContent());
-    
+
                 // send email
                 Transport.send(message);
                 log.info("Email sent to " + clients);

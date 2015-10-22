@@ -21,6 +21,7 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+
 /**
  * Raspberry Pi Plugin for a switch device. This plugin has four primary
  * components:
@@ -38,7 +39,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
  * clients when the state changes</li>
  * </ul>
  * 
- * @author kanzelmeyer
+ * @author Kevin Kanzelmeyer
  *
  */
 public class RPSwitchDevicePlugin implements DevicePlugin {
@@ -113,10 +114,10 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
      * can be operated by a wall switch it's important that the message
      * handler be responsible for toggling the device's swith in Alfred. 
      * 
-     * @author kanzelmeyer
+     * @author Kevin Kanzelmeyer
      *
      */
-    private class SwitchDeviceNetworkHandler implements NetworkHandler {
+    public class SwitchDeviceNetworkHandler implements NetworkHandler {
 
         @Override
         public void onConnect(Socket connection) { }
@@ -144,10 +145,10 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
      * device can be turned on and off with a wall switch, the state handler
      * only needs to send messages to clients to keep their states updated
      * 
-     * @author kanzelmeyer
+     * @author Kevin Kanzelmeyer
      *
      */
-    private class SwitchDeviceStateHandler implements StateDeviceHandler {
+    public class SwitchDeviceStateHandler implements StateDeviceHandler {
 
         @Override
         public void onAddDevice(StateDevice device) {
@@ -179,10 +180,10 @@ public class RPSwitchDevicePlugin implements DevicePlugin {
      * Sensor handler for a simple state device. The sensor should be able
      * to detect if a device is turned on or off
      * 
-     * @author kanzelmeyer
+     * @author Kevin Kanzelmeyer
      *
      */
-    private class SwitchSensorHandler implements GpioPinListenerDigital {
+    public class SwitchSensorHandler implements GpioPinListenerDigital {
 
         @Override
         public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {

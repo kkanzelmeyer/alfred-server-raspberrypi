@@ -1,4 +1,4 @@
-package com.alfred.server.server;
+package com.alfred.server;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
 
 import com.alfred.common.messages.StateDeviceProtos.StateDeviceMessage;
 
-public class FakeConnection implements Runnable {
+public class FakeConnection2 implements Runnable {
 
     private String _hostAddress = null;
     private String _hostPort = null;
     private Socket _socket = null;
-    private static final Logger log = LoggerFactory.getLogger(FakeConnection.class);
+    private static final Logger log = LoggerFactory.getLogger(FakeConnection2.class);
 
-    public FakeConnection(String hostAddress, String hostPort) {
+    public FakeConnection2(String hostAddress, String hostPort) {
         _hostAddress = hostAddress;
         _hostPort = hostPort;
     }
