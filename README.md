@@ -13,11 +13,13 @@ throughout the home to be monitored and/or controlled by Alfred.
 #### Install Java 8 (min)
 
 I'm told that Raspbian 8 includes Java 8 since early 2015. If you're running Raspbian ssh into your Pi and type:
+
 `sudo apt-get upgrade`
 `sudo apt-get update`
 
 
 Then check your Java version by running
+
 `java -version`
 
 
