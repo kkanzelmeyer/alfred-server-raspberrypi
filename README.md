@@ -10,13 +10,16 @@ throughout the home to be monitored and/or controlled by Alfred.
 #### WARNING - Connecting high voltage electrical devices to the Raspberry Pi is no joke. You need to know what you're doing. There are plenty of good tutorials (and even more bad tutorials) on the internet showing how to connect devices. Please proceed with caution and at your own risk
 
 ## Getting Started
-#### Install Java 8 (min) 
+#### Install Java 8 (min)
+
 I'm told that Raspbian 8 includes Java 8 since early 2015. If you're running Raspbian ssh into your Pi and type:
 `sudo apt-get upgrade`
 `sudo apt-get update`
 
+
 Then check your Java version by running
 `java -version`
+
 
 If you still do not have Java 8, try running
 `sudo apt-get install oracle-java8-jdk`
