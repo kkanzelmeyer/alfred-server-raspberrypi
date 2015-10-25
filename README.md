@@ -7,7 +7,7 @@ It is designed to be flexible and allow users to add various input/output device
 such as doorbells, garage doors, electrical outlets, ceiling fans, lights, etc, 
 throughout the home to be monitored and/or controlled by Alfred.
 
-#### WARNING - Connecting high voltage electrical devices to the Raspberry Pi is no joke. You need to know what you're doing. There are plenty of good tutorials (and even more bad tutorials) on the internet showing how to connect devices. Please proceed with caution and at your own risk
+__WARNING - Connecting high voltage electrical devices to the Raspberry Pi is no joke. You need to know what you're doing. There are plenty of good tutorials (and even more bad tutorials) on the internet showing how to connect devices. Please proceed with caution and at your own risk__
 
 ## Getting Started
 #### Install Java 8 (min)
@@ -24,6 +24,7 @@ Then check your Java version by running
 
 
 If you still do not have Java 8, try running
+
 `sudo apt-get install oracle-java8-jdk`
 
 #### Install Alfred
@@ -35,14 +36,17 @@ If you still do not have Java 8, try running
       - Secure copy to your Pi using your username and IP Address. 
         For example `scp Alfred-server-with-dependencies.jar pi@192.168.1.100:~/` This will place the jar in your home directory
 4. __Configure__ Once the jar has been copied the last step is to create a few files and directories. SSH into your Pi. First lets create a directory for your Alfred project root
+   
    `cd ~`
    `sudo mkdir Alfred`
    
    Inside the Alfred directory make two more directories:
+   
    `sudo mkdir img`
    `sudo mkdir cfg`
    
    Inside the "cfg" directory create two files:
+   
    `sudo touch config.properties`
    `sudo touch devices.json`
    
