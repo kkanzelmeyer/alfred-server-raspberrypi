@@ -14,7 +14,7 @@ __WARNING - Connecting high voltage electrical devices to the Raspberry Pi is no
 
 I'm told that Raspbian 8 includes Java 8 since early 2015. If you're running Raspbian ssh into your Pi and type:
 
-`sudo apt-get upgrade`
+`sudo apt-get upgrade` 
 `sudo apt-get update`
 
 
@@ -34,20 +34,22 @@ If you still do not have Java 8, try running
 3. __Deploy__ the jar to your Raspberry Pi using secure copy.
       - in a terminal navigate to [project root]/target and find the jar with dependencis there
       - Secure copy to your Pi using your username and IP Address. 
-        For example `scp Alfred-server-with-dependencies.jar pi@192.168.1.100:~/` This will place the jar in your home directory
+        For example:
+       `scp Alfred-server-with-dependencies.jar pi@192.168.1.100:~/` 
+        This will place the jar in your home directory
 4. __Configure__ Once the jar has been copied the last step is to create a few files and directories. SSH into your Pi. First lets create a directory for your Alfred project root
    
-   `cd ~`
+   `cd ~` 
    `sudo mkdir Alfred`
    
    Inside the Alfred directory make two more directories:
    
-   `sudo mkdir img`
+   `sudo mkdir img` 
    `sudo mkdir cfg`
    
    Inside the "cfg" directory create two files:
    
-   `sudo touch config.properties`
+   `sudo touch config.properties` 
    `sudo touch devices.json`
    
    See the `cfg` directory for this repository for instructions for the properties file as well as example files.
