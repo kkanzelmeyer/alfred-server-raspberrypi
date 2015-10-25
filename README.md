@@ -13,10 +13,10 @@ __WARNING - Connecting high voltage electrical devices to the Raspberry Pi is no
 #### Install Java 8 (min)
 
 I'm told that Raspbian 8 includes Java 8 since early 2015. If you're running Raspbian ssh into your Pi and type:
-
-`sudo apt-get upgrade` 
-`sudo apt-get update` 
-
+```
+sudo apt-get upgrade
+sudo apt-get update
+```
 
 Then check your Java version by running
 
